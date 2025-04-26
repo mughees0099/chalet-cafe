@@ -21,14 +21,14 @@ Welcome to the Chalet Cafe project! This repository contains the source code and
    ```
 3. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 ## Usage
 
 1. Start the development server:
    ```bash
-   npm start
+   pnpm run dev
    ```
 2. Open your browser and navigate to `http://localhost:3000`.
 
