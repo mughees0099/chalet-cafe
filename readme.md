@@ -13,7 +13,7 @@ Welcome to the Chalet Cafe project! This repository contains the source code and
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/chalet-cafe.git
+   git clone https://github.com/mughees0099/chalet-cafe.git
    ```
 2. Navigate to the project directory:
    ```bash
