@@ -1,24 +1,29 @@
-"use client"
+"use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { X } from "lucide-react"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 interface GalleryModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   image: {
-    src: string
-    alt: string
-    caption: string
-  } | null
+    src: string;
+    alt: string;
+    caption: string;
+  } | null;
 }
 
-export default function GalleryModal({ isOpen, onClose, image }: GalleryModalProps) {
-  if (!image) return null
+export default function GalleryModal({
+  isOpen,
+  onClose,
+  image,
+}: GalleryModalProps) {
+  if (!image) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-transparent border-none">
+        <DialogTitle className="sr-only">Image Modal</DialogTitle>
         <div className="relative bg-white rounded-lg overflow-hidden">
           <button
             onClick={onClose}
@@ -28,7 +33,11 @@ export default function GalleryModal({ isOpen, onClose, image }: GalleryModalPro
             <X className="h-6 w-6" />
           </button>
           <div className="max-h-[80vh] overflow-hidden">
-            <img src={image.src || "/placeholder.svg"} alt={image.alt} className="w-full h-auto object-contain" />
+            <img
+              src={image.src || "/placeholder.svg"}
+              alt={image.alt}
+              className="w-full h-auto object-contain"
+            />
           </div>
           <div className="p-4 bg-white">
             <p className="text-lg font-medium">{image.alt}</p>
@@ -37,5 +46,5 @@ export default function GalleryModal({ isOpen, onClose, image }: GalleryModalPro
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

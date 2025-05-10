@@ -14,9 +14,9 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-[90vh] flex items-center overflow-hidden hero-pattern">
+    <section className="relative h-[700px] flex items-center overflow-hidden hero-pattern">
       <div
-        className="absolute inset-0 bg-black/50 z-10"
+        className="absolute inset-0 bg-black/50 z-10 "
         style={{
           backgroundImage: "url('/image5.jpeg')",
           // backgroundSize: "cover",

@@ -1,22 +1,31 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { useInView } from "react-intersection-observer"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import GalleryModal from "@/components/gallery/gallery-modal"
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import GalleryModal from "@/components/gallery/gallery-modal";
 
-// Sample gallery data
 const galleryItems = {
   cafe: [
-    { id: "cafe1", src: "/placeholder.svg?height=400&width=600", alt: "Cafe Interior", caption: "Our cozy interior" },
+    {
+      id: "cafe1",
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Cafe Interior",
+      caption: "Our cozy interior",
+    },
     {
       id: "cafe2",
       src: "/placeholder.svg?height=400&width=600",
       alt: "Outdoor Seating",
       caption: "Outdoor seating area",
     },
-    { id: "cafe3", src: "/placeholder.svg?height=400&width=600", alt: "Coffee Bar", caption: "Our coffee bar" },
+    {
+      id: "cafe3",
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Coffee Bar",
+      caption: "Our coffee bar",
+    },
     {
       id: "cafe4",
       src: "/placeholder.svg?height=400&width=600",
@@ -29,7 +38,12 @@ const galleryItems = {
       alt: "Lounge Area",
       caption: "Comfortable lounge area",
     },
-    { id: "cafe6", src: "/placeholder.svg?height=400&width=600", alt: "Private Room", caption: "Private meeting room" },
+    {
+      id: "cafe6",
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Private Room",
+      caption: "Private meeting room",
+    },
   ],
   food: [
     {
@@ -62,7 +76,12 @@ const galleryItems = {
       alt: "Breakfast Platter",
       caption: "Breakfast Platter",
     },
-    { id: "food6", src: "/placeholder.svg?height=400&width=600", alt: "Pasta Dish", caption: "Homemade Pasta" },
+    {
+      id: "food6",
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Pasta Dish",
+      caption: "Homemade Pasta",
+    },
   ],
   events: [
     {
@@ -71,7 +90,12 @@ const galleryItems = {
       alt: "Coffee Workshop",
       caption: "Coffee brewing workshop",
     },
-    { id: "event2", src: "/placeholder.svg?height=400&width=600", alt: "Live Music", caption: "Weekend live music" },
+    {
+      id: "event2",
+      src: "/placeholder.svg?height=400&width=600",
+      alt: "Live Music",
+      caption: "Weekend live music",
+    },
     {
       id: "event3",
       src: "/placeholder.svg?height=400&width=600",
@@ -97,15 +121,17 @@ const galleryItems = {
       caption: "Private birthday celebration",
     },
   ],
-}
+};
 
 export default function GalleryGrid() {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
-  })
+  });
 
-  const [selectedImage, setSelectedImage] = useState<(typeof galleryItems.cafe)[0] | null>(null)
+  const [selectedImage, setSelectedImage] = useState<
+    (typeof galleryItems.cafe)[0] | null
+  >(null);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -115,7 +141,7 @@ export default function GalleryGrid() {
         staggerChildren: 0.1,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -124,7 +150,7 @@ export default function GalleryGrid() {
       scale: 1,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   return (
     <div ref={ref}>
@@ -226,7 +252,11 @@ export default function GalleryGrid() {
       </Tabs>
 
       {/* Image Modal */}
-      <GalleryModal isOpen={!!selectedImage} onClose={() => setSelectedImage(null)} image={selectedImage} />
+      <GalleryModal
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        image={selectedImage}
+      />
     </div>
-  )
+  );
 }
