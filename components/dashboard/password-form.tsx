@@ -35,54 +35,6 @@ export default function PasswordForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault()
-
-  //   if (formData.newPassword !== formData.confirmPassword) {
-  //     toast({
-  //       title: "Passwords don't match",
-  //       description: "New password and confirm password must match.",
-  //       variant: "destructive",
-  //     })
-  //     return
-  //   }
-  //   \
-  //   if (formData.newPassword.length &lt;
-  //   8
-  //   )
-  //   toast({
-  //     title: "Password too short",
-  //     description: "Password must be at least 8 characters long.",
-  //     variant: "destructive",
-  //   })
-  //   return
-
-  //   setIsLoading(true)
-
-  //   try {
-  //     // Simulate API call
-  //     await new Promise((resolve) => setTimeout(resolve, 1000))
-
-  //     toast({
-  //       title: "Password updated",
-  //       description: "Your password has been updated successfully.",
-  //     })
-
-  //     setFormData({
-  //       currentPassword: "",
-  //       newPassword: "",
-  //       confirmPassword: "",
-  //     })
-  //   } catch (error) {
-  //     toast({
-  //       title: "Error",
-  //       description: "Failed to update password. Please try again.",
-  //       variant: "destructive",
-  //     })
-  //   } finally {
-  //     setIsLoading(false)
-  //   }
-  // }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

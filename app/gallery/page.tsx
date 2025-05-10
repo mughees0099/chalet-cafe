@@ -1,11 +1,11 @@
-import MainLayout from "@/components/layout/main-layout"
-import type { Metadata } from "next"
-import GalleryGrid from "@/components/gallery/gallery-grid"
+import MainLayout from "@/components/layout/main-layout";
+import type { Metadata } from "next";
+import GalleryGrid from "@/components/gallery/gallery-grid";
 
 export const metadata: Metadata = {
   title: "Gallery | Chalet Cafe Islamabad",
   description: "Explore photos of our cafe, food, and events",
-}
+};
 
 export default function GalleryPage() {
   return (
@@ -29,5 +29,5 @@ export default function GalleryPage() {
         </section>
       </div>
     </MainLayout>
-  )
+  );
 }

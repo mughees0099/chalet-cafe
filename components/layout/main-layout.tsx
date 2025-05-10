@@ -1,10 +1,10 @@
-import type React from "react"
-import Navbar from "@/components/layout/navbar"
-import Footer from "@/components/layout/footer"
-import { ScrollToTop } from "@/components/ui/scroll-to-top"
+import type React from "react";
+import Navbar from "@/components/layout/navbar";
+import Footer from "@/components/layout/footer";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 interface MainLayoutProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
@@ -15,5 +15,5 @@ export default function MainLayout({ children }: MainLayoutProps) {
       <Footer />
       <ScrollToTop />
     </div>
-  )
+  );
 }

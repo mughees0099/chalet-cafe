@@ -2,6 +2,7 @@ import type React from "react";
 import { DashboardSidebar } from "@/components/dashboard/dashboard-sidebar";
 import DashboardHeader from "@/components/dashboard/dashboard-header";
 import { SidebarProvider } from "@/components/ui/sidebar";
+
 export default function DashboardLayout({
   children,
 }: {
