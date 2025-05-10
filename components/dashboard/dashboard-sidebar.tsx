@@ -22,7 +22,15 @@ import {
   SidebarMenuButton,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { signOut } from "next-auth/react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { useState } from "react";
+import { Button as UIButton } from "@/components/ui/button";
 
 const menuItems = [
   { title: "Dashboard", href: "/dashboard", icon: Home },
@@ -35,9 +43,26 @@ const menuItems = [
 
 export function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" });
+    setIsLoading(true);
+    // Simulate logout process
+    try {
+      // In a real app, this would be an API call to log out
+      await new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
+        toast.success("Logged out successfully");
+
+        router.push("/");
+      });
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -68,16 +93,42 @@ export function DashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarSeparator />
+        <SidebarSeparator className="bg-gray-700" />
         <div className="p-2">
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-5 w-5" />
-            <span>Logout</span>
-          </Button>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-black hover:bg-gray-100 hover:text-black"
+              >
+                <LogOut className="mr-2 h-5 w-5" />
+                <span>Logout</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-60 bg-[#1a1c23] text-white border border-gray-700">
+              <p className="text-sm mb-4">Are you sure you want to logout?</p>
+              <div className="flex justify-end space-x-2">
+                <UIButton
+                  size="sm"
+                  variant="outline"
+                  className="border-gray-600 text-black "
+                  onClick={() => setOpen(false)}
+                >
+                  Cancel
+                </UIButton>
+                <UIButton
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => {
+                    handleLogout();
+                  }}
+                  disabled={isLoading ? true : false}
+                >
+                  {isLoading ? "Logging out..." : "Logout"}
+                </UIButton>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </SidebarFooter>
     </Sidebar>

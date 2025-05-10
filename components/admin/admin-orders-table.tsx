@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Eye, Bell } from "lucide-react"
-import Link from "next/link"
-import { useToast } from "@/components/ui/use-toast"
+import { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Eye, Bell } from "lucide-react";
+import Link from "next/link";
+import { useToast } from "@/components/ui/use-toast";
 
 // Sample order data
 const recentOrders = [
@@ -46,11 +53,11 @@ const recentOrders = [
     total: 1350,
     isNew: false,
   },
-]
+];
 
 export default function AdminOrdersTable() {
-  const [orders, setOrders] = useState(recentOrders)
-  const { toast } = useToast()
+  const [orders, setOrders] = useState(recentOrders);
+  const { toast } = useToast();
 
   // Simulate receiving a new order via WebSocket
   useEffect(() => {
@@ -63,66 +70,71 @@ export default function AdminOrdersTable() {
         items: ["2x Chai Tea Latte", "1x Pancake Stack"],
         total: 1310,
         isNew: true,
-      }
+      };
 
-      setOrders((prev) => [newOrder, ...prev.slice(0, 3)])
+      setOrders((prev) => [newOrder, ...prev.slice(0, 3)]);
 
       // Show notification
       toast({
         title: "New Order Received!",
         description: `Order #${newOrder.id} from ${newOrder.customer}`,
-      })
+      });
+    }, 15000);
 
-      // Play notification sound
-      const audio = new Audio("/notification.mp3")
-      audio.play().catch((e) => console.log("Audio play failed:", e))
-    }, 15000)
-
-    return () => clearTimeout(timer)
-  }, [toast])
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
         return (
-          <Badge variant="outline" className="text-orange-500 border-orange-500">
+          <Badge
+            variant="outline"
+            className="text-orange-500 border-orange-500"
+          >
             Pending
           </Badge>
-        )
+        );
       case "approved":
         return (
           <Badge variant="outline" className="text-blue-500 border-blue-500">
             Approved
           </Badge>
-        )
+        );
       case "making":
         return (
           <Badge variant="outline" className="text-amber-500 border-amber-500">
             Making
           </Badge>
-        )
+        );
       case "ready":
         return (
-          <Badge variant="outline" className="text-purple-500 border-purple-500">
+          <Badge
+            variant="outline"
+            className="text-purple-500 border-purple-500"
+          >
             Ready
           </Badge>
-        )
+        );
       case "out_for_delivery":
         return (
-          <Badge variant="outline" className="text-indigo-500 border-indigo-500">
+          <Badge
+            variant="outline"
+            className="text-indigo-500 border-indigo-500"
+          >
             Out for Delivery
           </Badge>
-        )
+        );
       case "delivered":
         return (
           <Badge variant="outline" className="text-green-500 border-green-500">
             Delivered
           </Badge>
-        )
+        );
       default:
-        return <Badge variant="outline">Unknown</Badge>
+        return <Badge variant="outline">Unknown</Badge>;
     }
-  }
+  };
 
   return (
     <div className="rounded-md border overflow-hidden">
@@ -138,9 +150,14 @@ export default function AdminOrdersTable() {
         </TableHeader>
         <TableBody>
           {orders.map((order) => (
-            <TableRow key={order.id} className={order.isNew ? "bg-amber-50" : ""}>
+            <TableRow
+              key={order.id}
+              className={order.isNew ? "bg-amber-50" : ""}
+            >
               <TableCell className="font-medium flex items-center">
-                {order.isNew && <Bell className="h-4 w-4 text-amber-800 mr-1 animate-pulse" />}
+                {order.isNew && (
+                  <Bell className="h-4 w-4 text-amber-800 mr-1 animate-pulse" />
+                )}
                 {order.id}
               </TableCell>
               <TableCell>{order.customer}</TableCell>
@@ -158,5 +175,5 @@ export default function AdminOrdersTable() {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
