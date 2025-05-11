@@ -1,57 +1,62 @@
-"use client"
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
-import { motion } from "framer-motion"
-import { useInView } from "react-intersection-observer"
-import { PlusCircle } from "lucide-react"
-import { useCart } from "@/components/cart/cart-provider"
-import { useToast } from "@/components/ui/use-toast"
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { PlusCircle } from "lucide-react";
+import { useCart } from "@/components/cart/cart-provider";
+import { useToast } from "@/components/ui/use-toast";
+import { ca } from "date-fns/locale";
 
 const featuredItems = [
   {
     id: "1",
-    name: "Signature Latte",
-    description: "Our house specialty with a blend of premium espresso and velvety steamed milk",
-    price: 450,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Coffee",
+    name: "Chilly Bbq Chicken",
+    description:
+      "BBQ chicken, jalapenos, and mozzarella cheese on a spicy crust",
+    price: 849,
+    image: "/menu/Chilly bbq chicken.jpg?height=200&width=200",
+    category: "Pizza",
   },
   {
-    id: "2",
-    name: "Avocado Toast",
-    description: "Freshly mashed avocado on artisanal sourdough with cherry tomatoes and feta",
-    price: 650,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Breakfast",
+    id: "b2",
+    name: "Cheezy Weezy",
+    description:
+      "Double layers of melty cheese over a juicy beef patty, with lettuce, tomato, and our special sauce.",
+    price: 959,
+    image: "/menu/Cheezy weezy.jpg?height=200&width=200",
+    category: "Burgers",
   },
   {
     id: "3",
-    name: "Chocolate Fondant",
-    description: "Decadent chocolate cake with a molten center, served with vanilla ice cream",
-    price: 550,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Desserts",
+    name: "Alfredo Pasta",
+    description:
+      "Rich and creamy Alfredo sauce over tender pasta, topped with parmesan and herbs.",
+    price: 799,
+    image: "/menu/Alfredo pasta.jpg?height=200&width=200",
+    category: "Pasta",
   },
   {
     id: "4",
-    name: "Club Sandwich",
-    description: "Triple-decker sandwich with grilled chicken, bacon, lettuce, tomato and mayo",
-    price: 750,
-    image: "/placeholder.svg?height=300&width=300",
-    category: "Lunch",
+    name: "Bbq Chips",
+    description:
+      "Crunchy chips coated with smoky BBQ seasoning — bold and flavorful in every bite.",
+    price: 499,
+    image: "/menu/Bbq chips.jpg?height=200&width=200",
+    category: "Snacks",
   },
-]
+];
 
 export default function FeaturedMenu() {
   const [ref, inView] = useInView({
     triggerOnce: true,
     threshold: 0.1,
-  })
+  });
 
-  const { addToCart } = useCart()
-  const { toast } = useToast()
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   const handleAddToCart = (item: (typeof featuredItems)[0]) => {
     addToCart({
@@ -60,13 +65,13 @@ export default function FeaturedMenu() {
       price: item.price,
       quantity: 1,
       image: item.image,
-    })
+    });
 
     toast({
       title: "Added to cart",
       description: `${item.name} has been added to your cart.`,
-    })
-  }
+    });
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -76,7 +81,7 @@ export default function FeaturedMenu() {
         staggerChildren: 0.2,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -85,15 +90,18 @@ export default function FeaturedMenu() {
       y: 0,
       transition: { duration: 0.6 },
     },
-  }
+  };
 
   return (
     <section className="py-20 bg-white" ref={ref}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 section-heading">Our Featured Menu</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 section-heading">
+            Our Featured Menu
+          </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover our most popular items, crafted with care using the finest ingredients
+            Discover our most popular items, crafted with care using the finest
+            ingredients
           </p>
         </div>
 
@@ -116,11 +124,17 @@ export default function FeaturedMenu() {
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-lg">{item.name}</h3>
-                    <span className="text-primary font-semibold">Rs. {item.price}</span>
+                    <span className="text-primary font-semibold">
+                      Rs. {item.price}
+                    </span>
                   </div>
-                  <p className="text-gray-600 text-sm mb-4">{item.description}</p>
+                  <p className="text-gray-600 text-sm mb-4">
+                    {item.description}
+                  </p>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs px-2 py-1 bg-secondary text-primary rounded-full">{item.category}</span>
+                    <span className="text-xs px-2 py-1 bg-secondary text-primary rounded-full">
+                      {item.category}
+                    </span>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -138,10 +152,12 @@ export default function FeaturedMenu() {
 
         <div className="text-center mt-12">
           <Link href="/menu">
-            <Button className="bg-primary hover:bg-primary/90">View Full Menu</Button>
+            <Button className="bg-primary hover:bg-primary/90">
+              View Full Menu
+            </Button>
           </Link>
         </div>
       </div>
     </section>
-  )
+  );
 }

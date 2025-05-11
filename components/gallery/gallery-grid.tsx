@@ -10,37 +10,37 @@ const galleryItems = {
   cafe: [
     {
       id: "cafe1",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe1(memory).png?height=400&width=600",
       alt: "Cafe Interior",
       caption: "Our cozy interior",
     },
     {
       id: "cafe2",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe3(memory).png?height=400&width=600",
       alt: "Outdoor Seating",
       caption: "Outdoor seating area",
     },
     {
       id: "cafe3",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe4(memory).png?height=400&width=600",
       alt: "Coffee Bar",
       caption: "Our coffee bar",
     },
     {
       id: "cafe4",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe6(memory).png?height=400&width=600",
       alt: "Cafe Entrance",
-      caption: "Entrance to Chalet Cafe",
+      caption: "Chalet Cafe",
     },
     {
       id: "cafe5",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe2(memory).png?height=400&width=600",
       alt: "Lounge Area",
       caption: "Comfortable lounge area",
     },
     {
       id: "cafe6",
-      src: "/placeholder.svg?height=400&width=600",
+      src: "/cafe5(memory).png?height=400&width=600",
       alt: "Private Room",
       caption: "Private meeting room",
     },
@@ -48,77 +48,39 @@ const galleryItems = {
   food: [
     {
       id: "food1",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Signature Latte",
-      caption: "Our famous Signature Latte",
+      src: "/menu/Veggie lover.jpg?height=400&width=600",
+      alt: "Veggie Lover Pizza",
+      caption: "Our famous Veggie Lover Pizza",
     },
     {
       id: "food2",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Avocado Toast",
-      caption: "Freshly made Avocado Toast",
+      src: "/menu/Cheezy weezy.jpg?height=400&width=600",
+      alt: "Cheezy Weezy Burger",
+      caption: "Our Best Seller Cheezy Weezy Burger",
     },
     {
       id: "food3",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Chocolate Fondant",
-      caption: "Decadent Chocolate Fondant",
+      src: "/menu/Alfredo pasta.jpg?height=400&width=600",
+      alt: "Alfredo Pasta",
+      caption: "Creamy Alfredo Pasta",
     },
     {
       id: "food4",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Club Sandwich",
-      caption: "Classic Club Sandwich",
+      src: "/menu/Spicy grilled chicken.jpg?height=400&width=600",
+      alt: "Spicy Grilled Chicken",
+      caption: "Delicious Spicy Grilled Chicken Panini",
     },
     {
       id: "food5",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Breakfast Platter",
-      caption: "Breakfast Platter",
+      src: "/menu/Pizza chips.jpg?height=400&width=600",
+      alt: "Pizza Chips",
+      caption: "Our signature Pizza Chips",
     },
     {
       id: "food6",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Pasta Dish",
-      caption: "Homemade Pasta",
-    },
-  ],
-  events: [
-    {
-      id: "event1",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Coffee Workshop",
-      caption: "Coffee brewing workshop",
-    },
-    {
-      id: "event2",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Live Music",
-      caption: "Weekend live music",
-    },
-    {
-      id: "event3",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Book Club",
-      caption: "Monthly book club meeting",
-    },
-    {
-      id: "event4",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Art Exhibition",
-      caption: "Local artists exhibition",
-    },
-    {
-      id: "event5",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Cooking Class",
-      caption: "Cooking masterclass",
-    },
-    {
-      id: "event6",
-      src: "/placeholder.svg?height=400&width=600",
-      alt: "Birthday Party",
-      caption: "Private birthday celebration",
+      src: "/menu/Lotus cake.jpg?height=400&width=600",
+      alt: "Lotus Vanilla Cream",
+      caption: "Lotus Vanilla Cream Dessert",
     },
   ],
 };
@@ -159,7 +121,6 @@ export default function GalleryGrid() {
           <TabsList>
             <TabsTrigger value="cafe">Cafe</TabsTrigger>
             <TabsTrigger value="food">Food & Drinks</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
         </div>
 
@@ -181,7 +142,7 @@ export default function GalleryGrid() {
                   <img
                     src={item.src || "/placeholder.svg"}
                     alt={item.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-fill transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                     <p className="text-white p-4">{item.caption}</p>
@@ -210,36 +171,7 @@ export default function GalleryGrid() {
                   <img
                     src={item.src || "/placeholder.svg"}
                     alt={item.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <p className="text-white p-4">{item.caption}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </TabsContent>
-
-        <TabsContent value="events">
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate={inView ? "visible" : "hidden"}
-          >
-            {galleryItems.events.map((item) => (
-              <motion.div
-                key={item.id}
-                variants={itemVariants}
-                className="overflow-hidden rounded-lg shadow-md cursor-pointer"
-                onClick={() => setSelectedImage(item)}
-              >
-                <div className="relative group h-64">
-                  <img
-                    src={item.src || "/placeholder.svg"}
-                    alt={item.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full  object-fill transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
                     <p className="text-white p-4">{item.caption}</p>

@@ -16,7 +16,7 @@ export default function GalleryPage() {
           <div className="container mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Gallery</h1>
             <p className="text-xl max-w-3xl mx-auto">
-              Take a visual tour of our cafe, delicious food, and special events
+              Take a visual tour of our cafe & Signature food.
             </p>
           </div>
         </section>

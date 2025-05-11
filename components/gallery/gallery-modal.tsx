@@ -36,7 +36,8 @@ export default function GalleryModal({
             <img
               src={image.src || "/placeholder.svg"}
               alt={image.alt}
-              className="w-full h-auto object-contain"
+              className="w-full  transition-transform duration-500"
+              style={{ maxHeight: "80vh", objectFit: "fill" }}
             />
           </div>
           <div className="p-4 bg-white">

@@ -1,7 +1,14 @@
-import Link from "next/link"
-import { Facebook, Instagram, Twitter, MapPin, Phone, Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import Link from "next/link";
+import {
+  Facebook,
+  Instagram,
+  Twitter,
+  MapPin,
+  Phone,
+  Mail,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Footer() {
   return (
@@ -11,7 +18,8 @@ export default function Footer() {
           <div>
             <h3 className="text-xl font-bold mb-4">Chalet Cafe</h3>
             <p className="text-primary-foreground/80 mb-4">
-              Experience the finest cafe in Islamabad with our premium coffee, delicious food, and exceptional service.
+              Experience the finest cafe in Islamabad with our premium coffee,
+              delicious food, and exceptional service.
             </p>
             <div className="flex space-x-4">
               <a
@@ -42,7 +50,10 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                <Link
+                  href="/"
+                  className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                >
                   Home
                 </Link>
               </li>
@@ -78,14 +89,6 @@ export default function Footer() {
                   Gallery
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/blog"
-                  className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                >
-                  Blog
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -94,15 +97,21 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
-                <span className="text-primary-foreground/80">123 Cafe Street, F-7, Islamabad, Pakistan</span>
+                <span className="text-primary-foreground/80">
+                  123 Cafe Street, F-7, Islamabad, Pakistan
+                </span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span className="text-primary-foreground/80">+92 51 1234567</span>
+                <span className="text-primary-foreground/80">
+                  +92 51 1234567
+                </span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span className="text-primary-foreground/80">info@chaletcafe.pk</span>
+                <span className="text-primary-foreground/80">
+                  info@chaletcafe.pk
+                </span>
               </li>
             </ul>
           </div>
@@ -110,7 +119,8 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
             <p className="text-primary-foreground/80 mb-4">
-              Subscribe to our newsletter for updates, promotions, and special offers.
+              Subscribe to our newsletter for updates, promotions, and special
+              offers.
             </p>
             <div className="flex flex-col space-y-2">
               <Input
@@ -118,26 +128,23 @@ export default function Footer() {
                 placeholder="Your email address"
                 className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
               />
-              <Button className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">Subscribe</Button>
+              <Button className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+                Subscribe
+              </Button>
             </div>
           </div>
         </div>
 
         <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-primary-foreground/70">
-          <p>&copy; {new Date().getFullYear()} Chalet Cafe Islamabad. All rights reserved.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Chalet Cafe Islamabad. All rights
+            reserved.
+          </p>
           <div className="mt-2 flex justify-center space-x-4 text-sm">
-            <Link href="/privacy-policy" className="hover:text-primary-foreground">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-primary-foreground">
-              Terms & Conditions
-            </Link>
-            <Link href="/faq" className="hover:text-primary-foreground">
-              FAQ
-            </Link>
+            <p>Made with ❤️ by Farisa & Team </p>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
