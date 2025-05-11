@@ -35,8 +35,8 @@ export default function HeroSection() {
             Welcome to <span className="text-secondary">Chalet Cafe</span>
           </h1>
           <p className="text-xl text-white/90 mb-8">
-            Experience the finest coffee and cuisine in Islamabad. Order online
-            for delivery or pickup.
+            Experience the best lounge vibe in Islamabad. Order online for
+            delivery or pickup.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.div
