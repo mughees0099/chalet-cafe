@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/popover";
 import { Button as UIButton } from "@/components/ui/button";
 import { toast } from "react-toastify";
-import { useRouter } from "next/Navigation";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -46,7 +45,6 @@ export default function Navbar() {
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
   const { cartItems } = useCart();
-  const router = useRouter();
 
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
