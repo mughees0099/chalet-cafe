@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Menu, X, User } from "lucide-react";
+import { ShoppingCart, Menu, X, User, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import {
@@ -15,6 +15,15 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/components/cart/cart-provider";
 import CartDrawer from "@/components/cart/cart-drawer";
+import CheckStatus from "@/app/checkStatus";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { Button as UIButton } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import { useRouter } from "next/Navigation";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -24,12 +33,20 @@ const navLinks = [
   { href: "/gallery", label: "Gallery" },
 ];
 
+export async function Logout() {
+  localStorage.removeItem("mail");
+}
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
   const { cartItems } = useCart();
+  const router = useRouter();
 
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -45,9 +62,35 @@ export default function Navbar() {
       }
     };
 
+    const fetchUser = async () => {
+      const response = await CheckStatus();
+      if (response && response.success && response.user) {
+        setUser(response.user);
+      } else {
+        setUser(null);
+      }
+    };
+    fetchUser();
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  const handleLogout = async () => {
+    setIsLoading(true);
+    // Simulate logout process
+    try {
+      // In a real app, this would be an API call to log out
+      await new Promise((resolve) => setTimeout(resolve, 1000)).then(() => {
+        toast.success("Logged out successfully");
+        Logout();
+        window.location.href = "/";
+      });
+    } catch (error) {
+      toast.error("Logout failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -104,21 +147,65 @@ export default function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem asChild>
-                    <Link href="/login" className="w-full">
-                      Login
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/register" className="w-full">
-                      Register
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="w-full">
-                      My Account
-                    </Link>
-                  </DropdownMenuItem>
+                  {user ? (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/dashboard" className="w-full">
+                          Profile
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="w-full justify-start text-gray-700 hover:text-primary"
+                            >
+                              Logout
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-60 bg-[#1a1c23] text-white border border-gray-700">
+                            <p className="text-sm mb-4">
+                              Are you sure you want to logout?
+                            </p>
+                            <div className="flex justify-end space-x-2">
+                              <UIButton
+                                size="sm"
+                                variant="outline"
+                                className="border-gray-600 text-black "
+                                onClick={() => setOpen(false)}
+                              >
+                                Cancel
+                              </UIButton>
+                              <UIButton
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  handleLogout();
+                                }}
+                                disabled={isLoading ? true : false}
+                              >
+                                {isLoading ? "Logging out..." : "Logout"}
+                              </UIButton>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/login" className="w-full">
+                          Login
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/register" className="w-full">
+                          Register
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
               <Link href="/menu">

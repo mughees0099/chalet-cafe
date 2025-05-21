@@ -9,38 +9,40 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EyeClosed, EyeIcon, EyeOff } from "lucide-react";
+import { loginUser } from "./auth";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMethod, setLoginMethod] = useState("email");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [userRole, setUserRole] = useState("customer");
+  const [userRole, setUserRole] = useState("user");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      // In a real app, this would be an API call to authenticate
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const identifier = loginMethod === "email" ? email : phone;
+      const response = await loginUser(identifier, password);
+      if (!response.success) {
+        toast.error("Invalid credentials");
+        return;
+      }
+      const user = response.user;
+      const userRole = user.role;
+      setUserRole(userRole);
 
-      // Simulate successful login
-      toast({
-        title: "Login successful",
-        description: `Welcome back to Chalet Cafe! You are logged in as a ${userRole}.`,
-      });
+      toast.success("Login successful!");
 
-      // Redirect based on user role
+      localStorage.setItem("mail", user.email);
+
       switch (userRole) {
         case "admin":
           router.push("/admin");
@@ -50,11 +52,8 @@ export default function LoginForm() {
           router.push("/dashboard");
       }
     } catch (error) {
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
-        variant: "destructive",
-      });
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -63,17 +62,41 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+        <Tabs
+          defaultValue="email"
+          value={loginMethod}
+          onValueChange={setLoginMethod}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="email">Email</TabsTrigger>
+            <TabsTrigger value="phone">Phone Number</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="email" className="space-y-2 mt-4">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required={loginMethod === "email"}
+            />
+          </TabsContent>
+
+          <TabsContent value="phone" className="space-y-2 mt-4">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+92 300 1234567"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required={loginMethod === "phone"}
+            />
+          </TabsContent>
+        </Tabs>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
@@ -85,14 +108,26 @@ export default function LoginForm() {
               Forgot password?
             </Link>
           </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="flex items-center border rounded-md">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="relative"
+              required
+            />
+
+            <Button
+              type="button"
+              variant="link"
+              className="text-sm text-amber-800 hover:text-amber-900"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? <EyeOff /> : <EyeIcon />}
+            </Button>
+          </div>
         </div>
       </div>
 
