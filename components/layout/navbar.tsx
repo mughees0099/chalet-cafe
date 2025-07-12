@@ -480,7 +480,7 @@ export default function Navbar() {
                         <div className="flex items-center space-x-3">
                           <div className="relative">
                             <Image
-                              src={user.imageUrl || "/default-avatar.jpg"}
+                              src={user.image || "/default-avatar.jpg"}
                               alt="User Avatar"
                               className="h-12 w-12 rounded-full border-2 border-gray-200"
                               width={48}

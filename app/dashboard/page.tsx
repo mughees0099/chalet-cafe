@@ -996,7 +996,7 @@ export default function ChalletCafeDashboard() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
                         <AvatarImage
-                          src={user.avatar || "/placeholder.svg"}
+                          src={user.image || "/placeholder.svg"}
                           alt={user.name}
                         />
                         <AvatarFallback className="bg-red-100 text-red-700">
