@@ -190,9 +190,9 @@ export default function CheckoutForm({ user }: any) {
                       <RadioGroupItem value="easypaisa" id="easypaisa" />
                       <Label htmlFor="easypaisa" className="flex items-center">
                         <img
-                          src="/placeholder.svg?height=30&width=80"
+                          src="/easypaisa-logo.png?height=30&width=80"
                           alt="Easypaisa"
-                          className="h-8 mr-2"
+                          className="h-4 w-8 mr-2"
                         />
                         Easypaisa
                       </Label>
@@ -202,9 +202,9 @@ export default function CheckoutForm({ user }: any) {
                       <RadioGroupItem value="jazzcash" id="jazzcash" />
                       <Label htmlFor="jazzcash" className="flex items-center">
                         <img
-                          src="/placeholder.svg?height=30&width=80"
+                          src="/jazzcash-logo.png?height=30&width=80"
                           alt="JazzCash"
-                          className="h-8 mr-2"
+                          className="h-4 w-8 mr-2"
                         />
                         JazzCash
                       </Label>
