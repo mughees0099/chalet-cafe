@@ -141,7 +141,7 @@ export default function Footer() {
             reserved.
           </p>
           <div className="mt-2 flex justify-center space-x-4 text-sm">
-            <p>Made with ❤️ by Farisa & Team </p>
+            <p>Made with ❤️ by Farisa & Maryam </p>
           </div>
         </div>
       </div>

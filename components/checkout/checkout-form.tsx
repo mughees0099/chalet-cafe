@@ -1,67 +1,79 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useToast } from "@/components/ui/use-toast"
-import { useRouter } from "next/navigation"
-import { Loader2, CreditCard, Banknote } from "lucide-react"
-import { useCart } from "@/components/cart/cart-provider"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useRouter } from "next/navigation";
+import { Loader2, CreditCard, Banknote } from "lucide-react";
+import { useCart } from "@/components/cart/cart-provider";
+import { toast } from "react-toastify";
+import axios from "axios";
 
-export default function CheckoutForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState("cod")
-  const { toast } = useToast()
-  const router = useRouter()
-  const { clearCart } = useCart()
-
+export default function CheckoutForm({ user }: any) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const router = useRouter();
+  const { clearCart } = useCart();
+  const { cartItems, totalPrice } = useCart();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
+    name: user.name || "",
+    email: user.email || "",
+    phone: user.phone || "",
     address: "",
     city: "Islamabad",
     notes: "",
-  })
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
+    if (paymentMethod === "online") {
+      toast.warn("Currently online payment is not available.");
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      // Simulate order processing
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const response = await axios.post("/api/orders", {
+        user: user._id,
+        products: cartItems.map((item) => ({
+          product: item.id,
+          quantity: item.quantity,
+        })),
+        paymentMethod,
+        totalAmount: totalPrice + 150,
+        notes: formData.notes,
+        deliveryAddress: formData.address,
+      });
 
-      toast({
-        title: "Order placed successfully!",
-        description: "Your order has been received and is being processed.",
-      })
-
-      // Clear cart and redirect to confirmation page
-      clearCart()
-      router.push("/order-confirmation")
+      if (response.status === 201) {
+        toast.success("Order placed successfully!");
+        router.push(`/order-confirmation?orderId=${response.data._id}`);
+        clearCart();
+      } else {
+        throw new Error("Failed to place order");
+      }
     } catch (error) {
-      toast({
-        title: "Error processing order",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
+      console.error("Order submission failed:", error);
+      toast.error("Failed to place order. Please try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -79,7 +91,7 @@ export default function CheckoutForm() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder="John Doe"
+                  // placeholder="John Doe"
                   required
                 />
               </div>
@@ -115,9 +127,10 @@ export default function CheckoutForm() {
                   id="city"
                   name="city"
                   value={formData.city}
-                  onChange={handleChange}
                   placeholder="Islamabad"
                   required
+                  readOnly
+                  className="bg-gray-100 cursor-not-allowed"
                 />
               </div>
             </div>
@@ -163,7 +176,9 @@ export default function CheckoutForm() {
                   <Banknote className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">Cash on Delivery</p>
-                    <p className="text-sm text-gray-500">Pay with cash when your order is delivered</p>
+                    <p className="text-sm text-gray-500">
+                      Pay with cash when your order is delivered
+                    </p>
                   </div>
                 </div>
               </TabsContent>
@@ -174,7 +189,11 @@ export default function CheckoutForm() {
                     <div className="flex items-center space-x-2 border p-4 rounded-md">
                       <RadioGroupItem value="easypaisa" id="easypaisa" />
                       <Label htmlFor="easypaisa" className="flex items-center">
-                        <img src="/placeholder.svg?height=30&width=80" alt="Easypaisa" className="h-8 mr-2" />
+                        <img
+                          src="/placeholder.svg?height=30&width=80"
+                          alt="Easypaisa"
+                          className="h-8 mr-2"
+                        />
                         Easypaisa
                       </Label>
                     </div>
@@ -182,7 +201,11 @@ export default function CheckoutForm() {
                     <div className="flex items-center space-x-2 border p-4 rounded-md">
                       <RadioGroupItem value="jazzcash" id="jazzcash" />
                       <Label htmlFor="jazzcash" className="flex items-center">
-                        <img src="/placeholder.svg?height=30&width=80" alt="JazzCash" className="h-8 mr-2" />
+                        <img
+                          src="/placeholder.svg?height=30&width=80"
+                          alt="JazzCash"
+                          className="h-8 mr-2"
+                        />
                         JazzCash
                       </Label>
                     </div>
@@ -203,16 +226,23 @@ export default function CheckoutForm() {
           </CardContent>
         </Card>
 
-        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-lg py-6" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          className="w-full bg-primary hover:bg-primary/90 text-lg py-6"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing Order...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processing
+              Order...
             </>
           ) : (
-            `Place Order ${paymentMethod === "cod" ? "(Cash on Delivery)" : "(Pay Online)"}`
+            `Place Order ${
+              paymentMethod === "cod" ? "(Cash on Delivery)" : "(Pay Online)"
+            }`
           )}
         </Button>
       </div>
     </form>
-  )
+  );
 }

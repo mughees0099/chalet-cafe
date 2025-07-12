@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { useCart } from "@/components/cart/cart-provider"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/components/cart/cart-provider";
 
 export default function OrderSummary() {
-  const { cartItems, totalPrice } = useCart()
-  const [mounted, setMounted] = useState(false)
+  const { cartItems, totalPrice } = useCart();
+  const [mounted, setMounted] = useState(false);
 
   // Handle hydration mismatch
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
-  if (!mounted) return null
+  if (!mounted) return null;
 
-  const deliveryFee = 150
-  const total = totalPrice + deliveryFee
+  const deliveryFee = 150;
+  const total = totalPrice + deliveryFee;
 
   return (
     <Card>
@@ -35,10 +35,13 @@ export default function OrderSummary() {
                   <div key={item.id} className="flex justify-between">
                     <div className="flex-1">
                       <p className="font-medium">
-                        {item.name} <span className="text-gray-500">x{item.quantity}</span>
+                        {item.name}{" "}
+                        <span className="text-gray-500">x{item.quantity}</span>
                       </p>
                     </div>
-                    <p className="font-medium">Rs. {item.price * item.quantity}</p>
+                    <p className="font-medium">
+                      Rs. {item.price * item.quantity}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -71,5 +74,5 @@ export default function OrderSummary() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

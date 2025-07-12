@@ -1,75 +1,151 @@
-"use client"
+"use client";
+import { useState, useRef, useEffect } from "react";
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Upload, X } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Upload, X } from "lucide-react";
 
-export function ImageUpload({ currentImage, onImageChange }) {
-  const [previewUrl, setPreviewUrl] = useState(currentImage)
-  const [isDragging, setIsDragging] = useState(false)
-  const [error, setError] = useState(false)
+interface ImageUploadProps {
+  currentImage?: string;
+  onImageChange: (imageUrl: string, file?: File) => void; // Make sure this matches
+  onFileSelect?: (file: File | null) => void;
+  resetTrigger?: number;
+}
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+export function ImageUpload({
+  currentImage,
+  onImageChange,
+  onFileSelect,
+  resetTrigger,
+}: ImageUploadProps) {
+  const [previewUrl, setPreviewUrl] = useState<string>(currentImage || "");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [error, setError] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Instead of using FileReader which can cause issues in the preview environment,
-    // we'll just use a placeholder for the demo
-    setPreviewUrl("/placeholder.svg?height=200&width=200")
-    onImageChange("/placeholder.svg?height=200&width=200")
+  useEffect(() => {
+    if (resetTrigger) {
+      handleRemoveImage();
+    }
+  }, [resetTrigger]);
 
-    // In a real implementation, you would upload the file to your server
-    console.log("File selected:", file.name)
-  }
+  const createPreviewUrl = (file: File): string => {
+    return URL.createObjectURL(file);
+  };
 
-  const handleDragOver = (e) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size should be less than 5MB");
+      return;
+    }
+
+    const preview = createPreviewUrl(file);
+    setPreviewUrl(preview);
+    setSelectedFile(file);
+    setError(false);
+
+    // Pass both preview URL and file to parent
+    onImageChange(preview, file);
+
+    if (onFileSelect) {
+      onFileSelect(file);
+    }
+    console.log("File selected:", file.name);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size should be less than 5MB");
+      return;
+    }
+
+    const preview = createPreviewUrl(file);
+    setPreviewUrl(preview);
+    setSelectedFile(file);
+    setError(false);
+
+    // Pass both preview URL and file to parent
+    onImageChange(preview, file);
+
+    if (onFileSelect) {
+      onFileSelect(file);
+    }
+    console.log("File dropped:", file.name);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
 
   const handleDragLeave = () => {
-    setIsDragging(false)
-  }
-
-  const handleDrop = (e) => {
-    e.preventDefault()
-    setIsDragging(false)
-
-    const file = e.dataTransfer.files?.[0]
-    if (!file) return
-
-    // Use placeholder instead of FileReader
-    setPreviewUrl("/placeholder.svg?height=200&width=200")
-    onImageChange("/placeholder.svg?height=200&width=200")
-
-    console.log("File dropped:", file.name)
-  }
+    setIsDragging(false);
+  };
 
   const handleRemoveImage = () => {
-    setPreviewUrl(null)
-    onImageChange("")
-  }
+    if (previewUrl && previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl("");
+    setSelectedFile(null);
 
-  const handleImageError = () => {
-    setError(true)
-    setPreviewUrl("/placeholder.svg?height=200&width=200")
-  }
+    // Pass empty string and undefined file to parent
+    onImageChange("", undefined);
+
+    if (onFileSelect) {
+      onFileSelect(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {previewUrl ? (
         <div className="relative">
           <img
-            src={error ? "/placeholder.svg?height=200&width=200" : previewUrl}
-            alt="Menu item"
-            className="w-full h-48 object-cover rounded-md"
-            onError={handleImageError}
+            src={previewUrl || "/placeholder.svg"}
+            alt="Preview"
+            className="w-full h-48 object-cover rounded-lg border"
           />
           <Button
             type="button"
             variant="destructive"
             size="icon"
-            className="absolute top-2 right-2 h-8 w-8"
+            className="absolute top-2 right-2"
             onClick={handleRemoveImage}
           >
             <X className="h-4 w-4" />
@@ -77,25 +153,27 @@ export function ImageUpload({ currentImage, onImageChange }) {
         </div>
       ) : (
         <div
-          className={`border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center h-48 transition-colors ${
-            isDragging ? "border-primary bg-primary/10" : "border-border"
+          className={`border-2 border-dashed border-gray-300 rounded-lg p-8 text-center ${
+            isDragging ? "border-blue-500 bg-blue-50" : ""
           }`}
+          onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
         >
-          <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-          <p className="text-sm text-muted-foreground text-center mb-2">
-            Drag & drop an image here, or click to select
-          </p>
-          <Button type="button" variant="outline" size="sm" asChild>
-            <label>
-              Browse Files
-              <input type="file" accept="image/*" className="sr-only" onChange={handleFileChange} />
-            </label>
-          </Button>
+          <Upload className="mx-auto h-12 w-12 text-gray-400" />
+          <p className="mt-2 text-sm text-gray-600">No image selected</p>
         </div>
       )}
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={handleUploadClick}
+        className="w-full bg-transparent"
+      >
+        <Upload className="h-4 w-4 mr-2" />
+        {previewUrl ? "Change Image" : "Upload Image"}
+      </Button>
     </div>
-  )
+  );
 }

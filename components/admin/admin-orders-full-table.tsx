@@ -1,204 +1,389 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal } from "lucide-react"
-import Link from "next/link"
+import { useEffect, useState } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  Loader2,
+} from "lucide-react";
+import { OrderDetailsDialog } from "./order-details-dialog";
+import AdminOrdersFilter from "./admin-orders-filter";
+import axios from "axios";
+import type { DateRange } from "react-day-picker";
 
-// Sample order data
-const allOrders = [
-  {
-    id: "ORD-1235",
-    customer: "Sarah Ahmed",
-    date: "Today, 10:15 AM",
-    status: "pending",
-    items: ["1x Signature Latte", "1x Club Sandwich"],
-    total: 1200,
-  },
-  {
-    id: "ORD-1234",
-    customer: "Ali Hassan",
-    date: "Today, 10:00 AM",
-    status: "making",
-    items: ["1x Signature Latte", "1x Avocado Toast"],
-    total: 1100,
-  },
-  {
-    id: "ORD-1233",
-    customer: "Fatima Khan",
-    date: "Today, 9:30 AM",
-    status: "out_for_delivery",
-    items: ["1x Club Sandwich", "1x Iced Americano"],
-    total: 1100,
-  },
-  {
-    id: "ORD-1232",
-    customer: "Usman Ali",
-    date: "Today, 8:45 AM",
-    status: "delivered",
-    items: ["2x Cappuccino", "1x Chocolate Fondant"],
-    total: 1350,
-  },
-  {
-    id: "ORD-1231",
-    customer: "Ayesha Malik",
-    date: "Yesterday, 4:20 PM",
-    status: "delivered",
-    items: ["1x Breakfast Burrito", "1x Chai Tea Latte"],
-    total: 980,
-  },
-  {
-    id: "ORD-1230",
-    customer: "Hassan Ahmed",
-    date: "Yesterday, 2:15 PM",
-    status: "delivered",
-    items: ["1x Beef Burger", "1x Iced Americano", "1x Cheesecake"],
-    total: 1680,
-  },
-  {
-    id: "ORD-1229",
-    customer: "Zainab Khan",
-    date: "Yesterday, 11:30 AM",
-    status: "delivered",
-    items: ["2x Avocado Toast", "2x Cappuccino"],
-    total: 2100,
-  },
-  {
-    id: "ORD-1228",
-    customer: "Imran Malik",
-    date: "May 15, 2023, 1:45 PM",
-    status: "delivered",
-    items: ["1x Chicken Caesar Salad", "1x Signature Latte"],
-    total: 1150,
-  },
-]
+type Order = {
+  _id: string;
+  orderId: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  products: Array<{
+    product: {
+      _id: string;
+      name: string;
+      price: number;
+      image: string;
+    };
+    quantity: number;
+    _id: string;
+  }>;
+  paymentMethod: string;
+  totalAmount: number;
+  notes: string;
+  deliveryAddress: string;
+  status:
+    | "pending"
+    | "preparing"
+    | "ready"
+    | "delivered"
+    | "cancelled"
+    | "Out for Delivery";
+  createdAt: string;
+  updatedAt: string;
+};
 
 export default function AdminOrdersFullTable() {
-  const [orders, setOrders] = useState(allOrders)
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sort, setSort] = useState<{ key: keyof Order; dir: "asc" | "desc" }>({
+    key: "createdAt",
+    dir: "desc",
+  });
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
-  const getStatusBadge = (status: string) => {
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("/api/orders");
+        setOrders(response.data);
+        setFilteredOrders(response.data);
+        setError(null);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError("Failed to fetch orders");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
+  const handleFilterChange = (filters: {
+    search: string;
+    status: string;
+    dateRange: DateRange | undefined;
+  }) => {
+    let filtered = [...orders];
+
+    if (filters.search.trim()) {
+      filtered = filtered.filter(
+        (order) =>
+          order.orderId.toLowerCase().includes(filters.search.toLowerCase()) ||
+          order.user.name
+            .toLowerCase()
+            .includes(filters.search.toLowerCase()) ||
+          order.user.email.toLowerCase().includes(filters.search.toLowerCase())
+      );
+    }
+
+    if (filters.status !== "all") {
+      filtered = filtered.filter((order) => order.status === filters.status);
+    }
+
+    if (filters.dateRange?.from && filters.dateRange?.to) {
+      filtered = filtered.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+
+        const startDate = new Date(filters.dateRange.from!);
+        startDate.setHours(0, 0, 0, 0);
+
+        const endDate = new Date(filters.dateRange.to!);
+        endDate.setHours(23, 59, 59, 999);
+
+        return orderDate >= startDate && orderDate <= endDate;
+      });
+    }
+
+    console.log("Applied filters:", filters);
+    console.log("Filtered results:", filtered.length);
+    setFilteredOrders(filtered);
+  };
+
+  const toggleSort = (key: keyof Order) =>
+    setSort((p) =>
+      p.key === key
+        ? { key, dir: p.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" }
+    );
+
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    let aVal: any = a[sort.key];
+    let bVal: any = b[sort.key];
+
+    if (sort.key === "user") {
+      aVal = a.user.name;
+      bVal = b.user.name;
+    }
+
+    if (aVal === bVal) return 0;
+    return sort.dir === "asc" ? (aVal > bVal ? 1 : -1) : aVal < bVal ? 1 : -1;
+  });
+
+  const fmtDate = (iso: string) =>
+    new Intl.DateTimeFormat("en-PK", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(iso));
+
+  const badge = (status: Order["status"]) => {
+    const cls = "rounded-sm px-2 py-px text-xs font-medium";
     switch (status) {
       case "pending":
         return (
-          <Badge variant="outline" className="text-orange-500 border-orange-500">
+          <Badge className={`${cls} bg-orange-50 text-orange-700`}>
             Pending
           </Badge>
-        )
-      case "approved":
+        );
+      case "preparing":
         return (
-          <Badge variant="outline" className="text-blue-500 border-blue-500">
-            Approved
-          </Badge>
-        )
-      case "making":
-        return (
-          <Badge variant="outline" className="text-amber-500 border-amber-500">
-            Making
-          </Badge>
-        )
+          <Badge className={`${cls} bg-blue-50 text-blue-700`}>Preparing</Badge>
+        );
       case "ready":
         return (
-          <Badge variant="outline" className="text-purple-500 border-purple-500">
-            Ready
-          </Badge>
-        )
-      case "out_for_delivery":
+          <Badge className={`${cls} bg-purple-50 text-purple-700`}>Ready</Badge>
+        );
+      case "Out for Delivery":
         return (
-          <Badge variant="outline" className="text-indigo-500 border-indigo-500">
+          <Badge className={`${cls} bg-yellow-50 text-yellow-700`}>
             Out for Delivery
           </Badge>
-        )
+        );
       case "delivered":
         return (
-          <Badge variant="outline" className="text-green-500 border-green-500">
+          <Badge className={`${cls} bg-green-50 text-green-700`}>
             Delivered
           </Badge>
-        )
-      default:
-        return <Badge variant="outline">Unknown</Badge>
+        );
+      case "cancelled":
+        return (
+          <Badge className={`${cls} bg-red-50 text-red-700`}>Cancelled</Badge>
+        );
     }
+  };
+
+  const handleViewOrder = (orderId: string) => {
+    setSelectedOrderId(orderId);
+  };
+
+  const getTotalItems = (products: Order["products"]) => {
+    return products.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading orders...</span>
+      </div>
+    );
   }
 
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    setOrders(orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)))
+  if (error) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <Button onClick={() => window.location.reload()}>Try Again</Button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="rounded-md border overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Items</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders.map((order) => (
-            <TableRow key={order.id}>
-              <TableCell className="font-medium">{order.id}</TableCell>
-              <TableCell>{order.customer}</TableCell>
-              <TableCell>{order.date}</TableCell>
-              <TableCell>
-                <div className="max-w-[200px] truncate">{order.items.join(", ")}</div>
-              </TableCell>
-              <TableCell>Rs. {order.total}</TableCell>
-              <TableCell>
-                <Select defaultValue={order.status} onValueChange={(value) => handleStatusChange(order.id, value)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue>{getStatusBadge(order.status)}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="approved">Approved</SelectItem>
-                    <SelectItem value="making">Making</SelectItem>
-                    <SelectItem value="ready">Ready</SelectItem>
-                    <SelectItem value="out_for_delivery">Out for Delivery</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                  </SelectContent>
-                </Select>
-              </TableCell>
-              <TableCell className="text-right">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <Link href={`/admin/orders/${order.id}`} className="w-full">
-                        View Details
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>Assign Rider</DropdownMenuItem>
-                    <DropdownMenuItem>Print Receipt</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600">Cancel Order</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+    <div className="space-y-6">
+      {/* Filter Component */}
+      <AdminOrdersFilter orders={orders} onFilterChange={handleFilterChange} />
+
+      {/* Results Summary */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing <strong>{sortedOrders.length}</strong> of{" "}
+          <strong>{orders.length}</strong> orders
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="overflow-x-auto rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead
+                onClick={() => toggleSort("orderId")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Order ID
+                  {sort.key === "orderId" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead
+                onClick={() => toggleSort("user")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Customer
+                  {sort.key === "user" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead
+                onClick={() => toggleSort("createdAt")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Date
+                  {sort.key === "createdAt" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead className="font-semibold">Items</TableHead>
+              <TableHead
+                onClick={() => toggleSort("totalAmount")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Total
+                  {sort.key === "totalAmount" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead
+                onClick={() => toggleSort("paymentMethod")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Payment
+                  {sort.key === "paymentMethod" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead
+                onClick={() => toggleSort("status")}
+                className="cursor-pointer select-none font-semibold"
+              >
+                <span className="flex items-center gap-1">
+                  Status
+                  {sort.key === "status" &&
+                    (sort.dir === "asc" ? (
+                      <ChevronUp className="h-3.5 w-3.5" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5" />
+                    ))}
+                </span>
+              </TableHead>
+              <TableHead className="text-right font-semibold">
+                Actions
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {sortedOrders.map((order) => (
+              <TableRow key={order._id} className="hover:bg-gray-50">
+                <TableCell className="font-medium">{order.orderId}</TableCell>
+                <TableCell>{order.user.name}</TableCell>
+                <TableCell>{fmtDate(order.createdAt)}</TableCell>
+                <TableCell>{getTotalItems(order.products)}</TableCell>
+                <TableCell className="font-semibold">
+                  Rs. {order.totalAmount.toLocaleString()}
+                </TableCell>
+                <TableCell className="capitalize">
+                  {order.paymentMethod}
+                </TableCell>
+                <TableCell>{badge(order.status)}</TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="hover:bg-blue-50"
+                    onClick={() => handleViewOrder(order._id)}
+                  >
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">View</span>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* pagination placeholder */}
+      <div className="mt-6 flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing <strong>{sortedOrders.length}</strong> orders
+        </div>
+        <div className="flex gap-2">
+          <Button size="icon" variant="outline" disabled>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button size="icon" variant="outline" disabled>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Order Details Dialog */}
+      {selectedOrderId && (
+        <OrderDetailsDialog
+          orderId={selectedOrderId}
+          isOpen={!!selectedOrderId}
+          onClose={() => setSelectedOrderId(null)}
+          orders={orders}
+        />
+      )}
     </div>
-  )
+  );
 }

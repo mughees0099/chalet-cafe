@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -9,109 +8,52 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Bell } from "lucide-react";
-import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, User, DollarSign, Hash } from "lucide-react";
 
-// Sample order data
-const recentOrders = [
-  {
-    id: "ORD-1235",
-    customer: "Sarah Ahmed",
-    date: "Just now",
-    status: "pending",
-    items: ["1x Signature Latte", "1x Club Sandwich"],
-    total: 1200,
-    isNew: true,
-  },
-  {
-    id: "ORD-1234",
-    customer: "Ali Hassan",
-    date: "15 minutes ago",
-    status: "making",
-    items: ["1x Signature Latte", "1x Avocado Toast"],
-    total: 1100,
-    isNew: false,
-  },
-  {
-    id: "ORD-1233",
-    customer: "Fatima Khan",
-    date: "1 hour ago",
-    status: "out_for_delivery",
-    items: ["1x Club Sandwich", "1x Iced Americano"],
-    total: 1100,
-    isNew: false,
-  },
-  {
-    id: "ORD-1232",
-    customer: "Usman Ali",
-    date: "2 hours ago",
-    status: "delivered",
-    items: ["2x Cappuccino", "1x Chocolate Fondant"],
-    total: 1350,
-    isNew: false,
-  },
-];
+export default function AdminOrdersTable({ data }: any) {
+  console.log("data is", JSON.stringify(data));
+  console.log(data);
+  const orders = data?.orders?.length > 0 ? data.orders : [];
+  const filteredOrders = orders.filter(
+    (order: any) => order.status !== "cancelled" && order.status !== "delivered"
+  );
 
-export default function AdminOrdersTable() {
-  const [orders, setOrders] = useState(recentOrders);
-  const { toast } = useToast();
-
-  // Simulate receiving a new order via WebSocket
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const newOrder = {
-        id: "ORD-1236",
-        customer: "Ayesha Malik",
-        date: "Just now",
-        status: "pending",
-        items: ["2x Chai Tea Latte", "1x Pancake Stack"],
-        total: 1310,
-        isNew: true,
-      };
-
-      setOrders((prev) => [newOrder, ...prev.slice(0, 3)]);
-
-      // Show notification
-      toast({
-        title: "New Order Received!",
-        description: `Order #${newOrder.id} from ${newOrder.customer}`,
-      });
-    }, 15000);
-
-    return () => clearTimeout(timer);
-  }, [toast]);
+  const formatDate = (date: string) =>
+    new Intl.DateTimeFormat("en-PK", {
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(date));
 
   const getStatusBadge = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case "pending":
         return (
           <Badge
+            className="bg-orange-50 text-orange-700 border-orange-200"
             variant="outline"
-            className="text-orange-500 border-orange-500"
           >
             Pending
           </Badge>
         );
-      case "approved":
-        return (
-          <Badge variant="outline" className="text-blue-500 border-blue-500">
-            Approved
-          </Badge>
-        );
+      case "preparing":
       case "making":
         return (
-          <Badge variant="outline" className="text-amber-500 border-amber-500">
-            Making
+          <Badge
+            className="bg-blue-50 text-blue-700 border-blue-200"
+            variant="outline"
+          >
+            Preparing
           </Badge>
         );
       case "ready":
         return (
           <Badge
+            className="bg-purple-50 text-purple-700 border-purple-200"
             variant="outline"
-            className="text-purple-500 border-purple-500"
           >
             Ready
           </Badge>
@@ -119,61 +61,122 @@ export default function AdminOrdersTable() {
       case "out_for_delivery":
         return (
           <Badge
+            className="bg-yellow-50 text-yellow-700 border-yellow-200"
             variant="outline"
-            className="text-indigo-500 border-indigo-500"
           >
             Out for Delivery
           </Badge>
         );
       case "delivered":
         return (
-          <Badge variant="outline" className="text-green-500 border-green-500">
+          <Badge
+            className="bg-green-50 text-green-700 border-green-200"
+            variant="outline"
+          >
             Delivered
           </Badge>
         );
       default:
-        return <Badge variant="outline">Unknown</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
+  if (filteredOrders.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-500 text-lg">No active orders found</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-md border overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Total</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {orders.map((order) => (
-            <TableRow
-              key={order.id}
-              className={order.isNew ? "bg-amber-50" : ""}
-            >
-              <TableCell className="font-medium flex items-center">
-                {order.isNew && (
-                  <Bell className="h-4 w-4 text-amber-800 mr-1 animate-pulse" />
-                )}
-                {order.id}
-              </TableCell>
-              <TableCell>{order.customer}</TableCell>
-              <TableCell>{getStatusBadge(order.status)}</TableCell>
-              <TableCell>Rs. {order.total}</TableCell>
-              <TableCell className="text-right">
-                <Link href={`/admin/orders/${order.id}`}>
-                  <Button variant="ghost" size="icon">
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="w-full">
+      {/* Desktop Table View */}
+      <div className="hidden md:block">
+        <div className="rounded-lg border bg-white shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50/50">
+                <TableHead className="font-semibold text-gray-900">
+                  Order ID
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  Customer
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  Date
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  Total
+                </TableHead>
+                <TableHead className="font-semibold text-gray-900">
+                  Status
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredOrders.map((order: any) => (
+                <TableRow
+                  key={order._id}
+                  className="hover:bg-gray-50/50 transition-colors"
+                >
+                  <TableCell className="font-medium text-gray-900">
+                    {order.orderId}
+                  </TableCell>
+                  <TableCell className="text-gray-700">
+                    {order.user.name}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {formatDate(order.createdAt)}
+                  </TableCell>
+                  <TableCell className="font-semibold text-gray-900">
+                    Rs. {order.totalAmount.toLocaleString()}
+                  </TableCell>
+                  <TableCell>{getStatusBadge(order.status)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {filteredOrders.map((order: any) => (
+          <Card key={order._id} className="shadow-sm border border-gray-200">
+            <CardContent className="p-4">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-2">
+                  <Hash className="h-4 w-4 text-gray-500" />
+                  <span className="font-semibold text-gray-900">
+                    {order.orderId}
+                  </span>
+                </div>
+                {getStatusBadge(order.status)}
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <User className="h-4 w-4 text-gray-500" />
+                  <span>{order.user.name}</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-gray-600">
+                  <Calendar className="h-4 w-4 text-gray-500" />
+                  <span>{formatDate(order.createdAt)}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-gray-500" />
+                  <span className="font-semibold text-gray-900">
+                    Rs. {order.totalAmount.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

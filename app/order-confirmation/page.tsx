@@ -1,18 +1,80 @@
-import MainLayout from "@/components/layout/main-layout"
-import type { Metadata } from "next"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, Home, ShoppingBag } from "lucide-react"
-import Link from "next/link"
-
-export const metadata: Metadata = {
-  title: "Order Confirmation | Chalet Cafe Islamabad",
-  description: "Your order has been successfully placed",
-}
+"use client";
+import MainLayout from "@/components/layout/main-layout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { CheckCircle, Home, ShoppingBag } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function OrderConfirmationPage() {
-  // In a real app, this would use the order ID from the URL or context
-  const orderId = "ORD-" + Math.floor(10000 + Math.random() * 90000)
+  const searchParams = useSearchParams();
+  const orderIdFromParams = searchParams.get("orderId");
+  const [item, setItem] = useState({
+    orderId: "",
+    status: "",
+    paymentMethod: "",
+    totalAmount: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (orderIdFromParams) {
+      async function fetchOrder() {
+        try {
+          setLoading(true);
+
+          const response = await axios.get(`/api/orders/${orderIdFromParams}`);
+          if (response.status === 200) {
+            setItem(response.data);
+          } else {
+            setError(true);
+            toast.error("Order not found. Please check your order ID.");
+          }
+        } catch (error) {
+          setError(true);
+          toast.error("Failed to fetch order. Please try again later.");
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchOrder();
+    }
+  }, [orderIdFromParams]);
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (error || !item.orderId) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Order Not Found</h1>
+            <p className="text-gray-600 mb-4">
+              We couldn't find your order. Please check your order ID and try
+              again.
+            </p>
+            <Link href="/">
+              <Button variant="outline" className="bg-primary/90 text-white">
+                Back to Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
@@ -26,9 +88,12 @@ export default function OrderConfirmationPage() {
                 </div>
                 <h1 className="text-3xl font-bold mb-2">Order Confirmed!</h1>
                 <p className="text-gray-600 mb-2">
-                  Thank you for your order. We've received your order and will begin processing it right away.
+                  Thank you for your order. We've received your order and will
+                  begin processing it right away.
                 </p>
-                <p className="text-primary font-medium">Order ID: {orderId}</p>
+                <p className="text-primary font-medium">
+                  Order ID: {item.orderId}
+                </p>
               </div>
 
               <div className="bg-secondary p-6 rounded-lg mb-6">
@@ -36,7 +101,7 @@ export default function OrderConfirmationPage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Order Status:</span>
-                    <span className="font-medium">Processing</span>
+                    <span className="font-medium">{item.status}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Estimated Delivery:</span>
@@ -44,17 +109,33 @@ export default function OrderConfirmationPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Payment Method:</span>
-                    <span className="font-medium">Cash on Delivery</span>
+                    <span className="font-medium">
+                      {item.paymentMethod === "cod"
+                        ? "Cash On Delivery"
+                        : "N/A"}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Total Amount:</span>
-                    <span className="font-medium">Rs. 1,250</span>
+                    <span className="font-medium">
+                      Rs. {item.totalAmount - 150}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Delivery Fee:</span>
+                    <span className="font-medium">Rs. 150</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Sub Total:</span>
+                    <span className="font-medium">Rs. {item.totalAmount}</span>
                   </div>
                 </div>
               </div>
 
               <div className="text-center space-y-4">
-                <p className="text-gray-600">You can track your order status in your account dashboard.</p>
+                <p className="text-gray-600">
+                  You can track your order status in your account dashboard.
+                </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link href="/dashboard">
                     <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90">
@@ -73,5 +154,5 @@ export default function OrderConfirmationPage() {
         </div>
       </div>
     </MainLayout>
-  )
+  );
 }

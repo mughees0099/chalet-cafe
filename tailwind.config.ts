@@ -31,6 +31,12 @@ const config = {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        luxury: {
+          gold: "#d4a574",
+          cream: "#faf7f2",
+          navy: "#1e293b",
+          charcoal: "#334155",
+        },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",

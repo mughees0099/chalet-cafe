@@ -8,46 +8,18 @@ import { useInView } from "react-intersection-observer";
 import { PlusCircle } from "lucide-react";
 import { useCart } from "@/components/cart/cart-provider";
 import { useToast } from "@/components/ui/use-toast";
-import { ca } from "date-fns/locale";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-const featuredItems = [
-  {
-    id: "1",
-    name: "Chilly Bbq Chicken",
-    description:
-      "BBQ chicken, jalapenos, and mozzarella cheese on a spicy crust",
-    price: 849,
-    image: "/menu/Chilly bbq chicken.jpg?height=200&width=200",
-    category: "Pizza",
-  },
-  {
-    id: "b2",
-    name: "Cheezy Weezy",
-    description:
-      "Double layers of melty cheese over a juicy beef patty, with lettuce, tomato, and our special sauce.",
-    price: 959,
-    image: "/menu/Cheezy weezy.jpg?height=200&width=200",
-    category: "Burgers",
-  },
-  {
-    id: "3",
-    name: "Alfredo Pasta",
-    description:
-      "Rich and creamy Alfredo sauce over tender pasta, topped with parmesan and herbs.",
-    price: 799,
-    image: "/menu/Alfredo pasta.jpg?height=200&width=200",
-    category: "Pasta",
-  },
-  {
-    id: "4",
-    name: "Bbq Chips",
-    description:
-      "Crunchy chips coated with smoky BBQ seasoning — bold and flavorful in every bite.",
-    price: 499,
-    image: "/menu/Bbq chips.jpg?height=200&width=200",
-    category: "Snacks",
-  },
-];
+type FeaturedItem = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  category: string;
+};
 
 export default function FeaturedMenu() {
   const [ref, inView] = useInView({
@@ -56,7 +28,38 @@ export default function FeaturedMenu() {
   });
 
   const { addToCart } = useCart();
-  const { toast } = useToast();
+  const [featuredItems, setFeaturedItems] = useState<FeaturedItem[]>([]);
+  useEffect(() => {
+    const fetchFeaturedItems = async () => {
+      const response = await axios.get("/api/Products");
+      if (response.status === 200) {
+        const uniqueCategories = new Set();
+        const filteredData = [];
+        for (const item of response.data) {
+          if (!item.available) continue;
+          if (!uniqueCategories.has(item.category)) {
+            uniqueCategories.add(item.category);
+            filteredData.push(item);
+          }
+          if (filteredData.length === 4) break;
+        }
+
+        const items = filteredData.map((item) => ({
+          id: item._id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          image: item.image,
+          category: item.category,
+        }));
+        setFeaturedItems(items);
+      } else {
+        console.error("Failed to fetch featured items");
+        toast.error("Failed to load featured items");
+      }
+    };
+    fetchFeaturedItems();
+  }, []);
 
   const handleAddToCart = (item: (typeof featuredItems)[0]) => {
     addToCart({
@@ -67,10 +70,7 @@ export default function FeaturedMenu() {
       image: item.image,
     });
 
-    toast({
-      title: "Added to cart",
-      description: `${item.name} has been added to your cart.`,
-    });
+    toast.success(`${item.name} added to cart`);
   };
 
   const containerVariants = {

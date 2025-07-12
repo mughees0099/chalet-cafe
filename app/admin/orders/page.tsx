@@ -1,26 +1,30 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import AdminOrdersFullTable from "@/components/admin/admin-orders-full-table"
-import AdminOrdersFilter from "@/components/admin/admin-orders-filter"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import AdminOrdersFullTable from "@/components/admin/admin-orders-full-table";
 
 export default function AdminOrdersPage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Order Management</h1>
-        <p className="text-gray-500">View and manage all customer orders</p>
+    <div className="p-4 md:p-6 lg:p-8 space-y-8">
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+          Order Management
+        </h1>
+        <p className="text-muted-foreground text-lg">
+          View and manage all customer orders
+        </p>
       </div>
 
-      <AdminOrdersFilter />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>All Orders</CardTitle>
-          <CardDescription>Manage and update order statuses</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-4"></CardHeader>
+        <CardContent className="pt-0">
           <AdminOrdersFullTable />
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

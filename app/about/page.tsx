@@ -55,11 +55,11 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="relative">
-                <div className="rounded-lg overflow-hidden shadow-xl">
+                <div className="rounded-lg overflow-hidden shadow-xl ">
                   <img
                     src="/image3.jpeg"
                     alt="Chalet Cafe Interior"
-                    className="w-full h-auto"
+                    className="h-[500px] w-full"
                   />
                 </div>
                 <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg hidden md:block">
@@ -77,7 +77,7 @@ export default function AboutPage() {
               Our Values
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Coffee className="h-8 w-8 text-primary" />
                 </div>
@@ -87,7 +87,7 @@ export default function AboutPage() {
                   ingredients, we source only the best.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-primary" />
                 </div>
@@ -97,7 +97,7 @@ export default function AboutPage() {
                   ideas, and build relationships.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-primary" />
                 </div>
@@ -107,7 +107,7 @@ export default function AboutPage() {
                   provide unique experiences.
                 </p>
               </div>
-              <div className="bg-white p-6 rounded-lg shadow-md text-center">
+              <div className="bg-white p-6 rounded-lg shadow-md text-center hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer">
                 <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Clock className="h-8 w-8 text-primary" />
                 </div>
@@ -198,11 +198,11 @@ export default function AboutPage() {
                         Chalet Cafe opens its doors in F-7, Islamabad
                       </p>
                     </div>
-                    <div className="w-1/2 pl-8">
+                    <div className="w-1/2 pl-8 ">
                       <img
                         src="/image4.jpeg?height=150&width=250"
                         alt="Cafe Opening"
-                        className="rounded-lg shadow-md"
+                        className="rounded-lg shadow-md md:h-[400px] w-full "
                       />
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export default function AboutPage() {
                       <img
                         src="/image7.jpg?height=150&width=250"
                         alt="Menu Expansion"
-                        className="rounded-lg shadow-md ml-auto"
+                        className="rounded-lg shadow-md ml-auto md:h-[400px] w-full"
                       />
                     </div>
                     <div className="w-1/2 pl-8">
@@ -240,7 +240,7 @@ export default function AboutPage() {
                       <img
                         src="/image8.png?height=150&width=250"
                         alt="Online Ordering"
-                        className="rounded-lg shadow-md"
+                        className="rounded-lg shadow-md md:h-[400px] w-full"
                       />
                     </div>
                   </div>
@@ -253,7 +253,7 @@ export default function AboutPage() {
                       <img
                         src="/image6.jpeg?height=150&width=250"
                         alt="New Location"
-                        className="rounded-lg shadow-md ml-auto"
+                        className="rounded-lg shadow-md ml-auto md:h-[400px] w-full"
                       />
                     </div>
                     <div className="w-1/2 pl-8">

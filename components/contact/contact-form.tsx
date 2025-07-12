@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/components/ui/use-toast"
-import { Label } from "@/components/ui/label"
-import { Loader2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -17,29 +17,36 @@ export default function ContactForm() {
     phone: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    // Simulate form submission
     try {
-      // In a real app, this would be an API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      if (
+        !formData.name ||
+        !formData.email ||
+        !formData.subject ||
+        !formData.message
+      ) {
+        throw new Error("All fields are required");
+      }
+      if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        throw new Error("Invalid email address");
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      toast({
-        title: "Message sent successfully!",
-        description: "We'll get back to you as soon as possible.",
-      })
+      toast.success("Message sent successfully!");
 
       // Reset form
       setFormData({
@@ -48,24 +55,32 @@ export default function ContactForm() {
         phone: "",
         subject: "",
         message: "",
-      })
+      });
     } catch (error) {
-      toast({
-        title: "Error sending message",
-        description: "Please try again later.",
-        variant: "destructive",
-      })
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      console.error("Form submission error:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="name">Your Name</Label>
-          <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" required />
+          <Input
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="John Doe"
+            required
+          />
         </div>
 
         <div className="space-y-2">
@@ -85,7 +100,13 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="phone">Phone Number</Label>
-          <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="+92 300 1234567" />
+          <Input
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="+92 300 1234567"
+          />
         </div>
 
         <div className="space-y-2">
@@ -114,7 +135,11 @@ export default function ContactForm() {
         />
       </div>
 
-      <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="w-full bg-primary hover:bg-primary/90"
+        disabled={isSubmitting}
+      >
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...
@@ -124,5 +149,5 @@ export default function ContactForm() {
         )}
       </Button>
     </form>
-  )
+  );
 }

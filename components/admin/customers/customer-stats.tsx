@@ -1,36 +1,31 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { ArrowUpIcon, ArrowDownIcon } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card";
 
 interface CustomerStatsProps {
-  title: string
-  value: string
-  change: string
-  trend: "up" | "down" | "neutral"
-  description: string
+  title: string;
+  value: string;
 }
 
-export default function CustomerStats({ title, value, change, trend, description }: CustomerStatsProps) {
+export default function CustomerStats({ title, value }: CustomerStatsProps) {
   return (
-    <Card>
+    <Card
+      className={`border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-gray-50 to-gray-100 ${
+        title === "Total Customers"
+          ? "text-blue-900 bg-gradient-to-br from-blue-50 to-blue-100"
+          : title === "New Customers"
+          ? "text-green-900 bg-gradient-to-br from-green-50 to-green-100"
+          : title === "Avg. Order Value"
+          ? "text-yellow-900  bg-gradient-to-br from-yellow-50 to-yellow-100"
+          : "text-gray-900"
+      }`}
+    >
       <CardContent className="p-6">
-        <div className="flex flex-col space-y-2">
-          <p className="text-sm text-gray-400">{title}</p>
+        <div className="flex flex-col space-y-3 ">
+          <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <div className="flex items-baseline justify-between">
-            <p className="text-3xl font-bold">{value}</p>
-            <div className="flex items-center">
-              {trend === "up" ? (
-                <ArrowUpIcon className="h-4 w-4 text-green-500 mr-1" />
-              ) : trend === "down" ? (
-                <ArrowDownIcon className="h-4 w-4 text-red-500 mr-1" />
-              ) : null}
-              <span className={trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-gray-400"}>
-                {change}
-              </span>
-            </div>
+            <p className={`text-3xl font-bold `}>{value}</p>
           </div>
-          <p className="text-xs text-gray-400">{description}</p>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

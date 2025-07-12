@@ -8,12 +8,8 @@ import AboutSection from "@/components/home/about-section";
 import TestimonialsSection from "@/components/home/testimonials-section";
 import SpecialOffers from "@/components/home/special-offers";
 import InstagramFeed from "@/components/home/instagram-feed";
-import DatabaseConnection from "@/config/db.js";
 
 export default function Home() {
-  // Initialize the database connection
-  DatabaseConnection();
-
   return (
     <MainLayout>
       <HeroSection />
