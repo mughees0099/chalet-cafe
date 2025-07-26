@@ -630,71 +630,9 @@ export default function CustomerDetailsDialog({
                           </div>
                         </div>
                       </div>
-                      {/* <div className="mt-8">
-                      <h3 className="text-lg font-semibold mb-4">
-                        Order Frequency
-                      </h3>
-                      <div className="h-32 bg-gray-50 rounded-lg flex items-end justify-around px-4 py-4">
-                        {[0.3, 0.5, 0.8, 0.6, 0.9, 0.7, 0.4].map(
-                          (height, i) => (
-                            <div
-                              key={i}
-                              className="w-8 bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-sm"
-                              style={{ height: `${height * 100}%` }}
-                            />
-                          )
-                        )}
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground mt-2 px-4">
-                        <span>Mon</span>
-                        <span>Tue</span>
-                        <span>Wed</span>
-                        <span>Thu</span>
-                        <span>Fri</span>
-                        <span>Sat</span>
-                        <span>Sun</span>
-                      </div>
-                    </div> */}
                     </CardContent>
                   </Card>
                 </TabsContent>
-                {/* <TabsContent value="notes">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle>Customer Notes</CardTitle>
-                    <CardDescription>
-                      Internal notes and preferences for this customer
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {lastOrder?.notes && (
-                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                          <div className="flex justify-between items-center mb-2">
-                            <h4 className="font-semibold text-blue-900">
-                              Order Notes
-                            </h4>
-                            <span className="text-xs text-blue-600">
-                              {new Date(
-                                lastOrder.createdAt
-                              ).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <p className="text-sm text-blue-800">
-                            {lastOrder.notes}
-                          </p>
-                        </div>
-                      )}
-                      <Button
-                        variant="outline"
-                        className="w-full bg-transparent"
-                      >
-                        Add New Note
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent> */}
               </Tabs>
             </div>
           </div>

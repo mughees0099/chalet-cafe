@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
       );
     }
     const orders = await Order.find({})
-      .populate("user", "name email")
+      .populate("user", "name email phone")
       .populate("products.product", "name price image")
       .sort({ createdAt: -1 })
       .lean();
@@ -69,7 +69,7 @@ export async function GET(req: NextRequest) {
       .lean();
     const totalOrders = orders.length;
     const deliveredOrders = orders.filter(
-      (order) => order.status === "delivered"
+      (order) => order.status === "delivered" || order.status === "collected"
     );
     const totalRevenue = deliveredOrders.reduce(
       (acc, order) => acc + order.totalAmount,

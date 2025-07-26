@@ -52,7 +52,8 @@ type Order = {
     | "ready"
     | "delivered"
     | "cancelled"
-    | "Out for Delivery";
+    | "Out for Delivery"
+    | "collected";
   createdAt: string;
   updatedAt: string;
 };
@@ -73,11 +74,13 @@ export default function AdminOrdersFullTable() {
       try {
         setLoading(true);
         const response = await axios.get("/api/orders");
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch orders");
+        }
         setOrders(response.data);
         setFilteredOrders(response.data);
         setError(null);
       } catch (error) {
-        console.error("Error fetching orders:", error);
         setError("Failed to fetch orders");
       } finally {
         setLoading(false);
@@ -179,6 +182,10 @@ export default function AdminOrdersFullTable() {
           <Badge className={`${cls} bg-yellow-50 text-yellow-700`}>
             Out for Delivery
           </Badge>
+        );
+      case "collected":
+        return (
+          <Badge className={`${cls} bg-gray-50 text-gray-700`}>Collected</Badge>
         );
       case "delivered":
         return (
@@ -340,7 +347,7 @@ export default function AdminOrdersFullTable() {
                   Rs. {order.totalAmount.toLocaleString()}
                 </TableCell>
                 <TableCell className="capitalize">
-                  {order.paymentMethod}
+                  {order.orderType === "pickup" ? "COP" : order.paymentMethod}
                 </TableCell>
                 <TableCell>{badge(order.status)}</TableCell>
                 <TableCell className="text-right">

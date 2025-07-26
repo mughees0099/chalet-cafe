@@ -27,6 +27,7 @@ import {
   Package,
   Calendar,
   Mail,
+  Phone,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -97,7 +98,6 @@ export function OrderDetailsDialog({
       minute: "2-digit",
     }).format(new Date(dateString));
   };
-
   const getStatusBadge = (status: string) => {
     const badges = {
       pending: "bg-orange-50 text-orange-700 border-orange-200",
@@ -106,6 +106,7 @@ export function OrderDetailsDialog({
       "Out for Delivery": "bg-yellow-50 text-yellow-700 border-yellow-200",
       delivered: "bg-green-50 text-green-700 border-green-200",
       cancelled: "bg-red-50 text-red-700 border-red-200",
+      collected: "bg-gray-50 text-gray-700 border-gray-200",
     };
     return (
       <Badge className={`${badges[status as keyof typeof badges]} px-3 py-1`}>
@@ -213,7 +214,11 @@ export function OrderDetailsDialog({
                 .replace(/\b\w/g, (l) => l.toUpperCase())}
             </div>
             <div>
-              <strong>Payment:</strong> ${order.paymentMethod.toUpperCase()}<br>
+              <strong>Payment:</strong> ${
+                order.orderType === "pickup"
+                  ? "COP"
+                  : order.paymentMethod.toUpperCase()
+              }<br>
               <strong>Type:</strong> Delivery
             </div>
           </div>
@@ -221,7 +226,11 @@ export function OrderDetailsDialog({
             <h3>Customer Information</h3>
             <strong>Name:</strong> ${order.user.name}<br>
             <strong>Email:</strong> ${order.user.email}<br>
-            <strong>Address:</strong> ${order.deliveryAddress}
+            <strong>Address:</strong> ${
+              order.orderType === "pickup"
+                ? "Pickup from store"
+                : order.deliveryAddress
+            }<br>
           </div>
           <h3>Order Items</h3>
           <table class="items-table">
@@ -304,6 +313,7 @@ export function OrderDetailsDialog({
       setUpdating(false);
     }
   };
+  console.log("Order Details:", order);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -357,7 +367,9 @@ export function OrderDetailsDialog({
                         Payment Method
                       </p>
                       <p className="font-medium capitalize">
-                        {order.paymentMethod}
+                        {order.orderType === "pickup"
+                          ? "COP"
+                          : order.paymentMethod}
                       </p>
                     </div>
                   </div>
@@ -446,72 +458,115 @@ export function OrderDetailsDialog({
                       <p className="font-medium">{order.user.email}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                  <div className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <p className="text-sm text-muted-foreground">
-                        Delivery Address
-                      </p>
-                      <p className="font-medium">{order.deliveryAddress}</p>
+                      <p className="text-sm text-muted-foreground">Phone</p>
+                      <p className="font-medium">{order.user.phone}</p>
                     </div>
                   </div>
+                  {order.orderType === "pickup" && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Pickup Location
+                        </p>
+                        <p className="font-medium">
+                          {order.orderTypeDisplay || "F-10 Markaz, Islamabad"}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  {order.orderType === "delivery" && (
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                      <div>
+                        <p className="text-sm text-muted-foreground">
+                          Delivery Address
+                        </p>
+                        <p className="font-medium">{order.deliveryAddress}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
 
             {/* Status Update */}
-            {order.status !== "delivered" && order.status !== "cancelled" && (
-              <Card className="border-0 shadow-lg">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-2">
-                    <Clock className="h-5 w-5" />
-                    Update Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                      Current Status
-                    </label>
-                    <Select
-                      value={currentStatus}
-                      onValueChange={(value) =>
-                        setCurrentStatus(value as Order["status"])
-                      }
-                      disabled={updating}
+            {order.status !== "delivered" &&
+              order.status !== "cancelled" &&
+              order.status !== "collected" && (
+                <Card className="border-0 shadow-lg">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-2">
+                      <Clock className="h-5 w-5" />
+                      Update Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Current Status
+                      </label>
+                      <Select
+                        value={currentStatus}
+                        onValueChange={(value) =>
+                          setCurrentStatus(value as Order["status"])
+                        }
+                        disabled={updating}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="preparing">Preparing</SelectItem>
+                          {order.orderType === "pickup" && (
+                            <>
+                              <SelectItem value="ready">
+                                {order.orderType === "pickup"
+                                  ? "Ready for Pickup"
+                                  : "Ready"}
+                              </SelectItem>
+                              <SelectItem value="collected">
+                                Collected
+                              </SelectItem>
+                            </>
+                          )}
+
+                          {order.orderType !== "pickup" && (
+                            <>
+                              <SelectItem value="Out for Delivery">
+                                Out for Delivery
+                              </SelectItem>
+                              <SelectItem value="delivered">
+                                Delivered
+                              </SelectItem>
+                            </>
+                          )}
+
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      className="w-full bg-green-600 hover:bg-green-700"
+                      onClick={() => handleStatusUpdate(currentStatus)}
+                      disabled={updating || currentStatus === order.status}
                     >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pending">Pending</SelectItem>
-                        <SelectItem value="preparing">Preparing</SelectItem>
-                        <SelectItem value="ready">Ready</SelectItem>
-                        <SelectItem value="Out for Delivery">
-                          Out for Delivery
-                        </SelectItem>
-                        <SelectItem value="delivered">Delivered</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    className="w-full bg-green-600 hover:bg-green-700"
-                    onClick={() => handleStatusUpdate(currentStatus)}
-                    disabled={updating || currentStatus === order.status}
-                  >
-                    {updating ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Updating...
-                      </>
-                    ) : (
-                      "Update Status"
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+                      {updating ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Updating...
+                        </>
+                      ) : (
+                        "Update Status"
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
           </div>
         </div>
       </DialogContent>

@@ -53,7 +53,10 @@ export default function CustomersTable({ setStats }: any) {
               );
 
               const totalSpent = customerOrders
-                .filter((order: any) => order.status === "delivered")
+                .filter(
+                  (order: any) =>
+                    order.status === "delivered" || order.status === "collected"
+                )
                 .reduce(
                   (sum: number, order: any) => sum + order.totalAmount,
                   0

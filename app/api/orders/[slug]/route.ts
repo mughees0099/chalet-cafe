@@ -129,6 +129,14 @@ export async function PATCH(
             "Your order has been cancelled. If this was a mistake, please contact support.",
           buttonText: "Contact Support",
         },
+        collected: {
+          color: "#8D6E63",
+          emoji: "🙌",
+          title: "Order Collected",
+          message:
+            "Thank you for collecting your order. We hope you enjoyed it!",
+          buttonText: "Order Again",
+        },
       };
 
       const meta = statusMeta[forEmail.status.toLowerCase()];
@@ -247,9 +255,6 @@ export async function PATCH(
     return NextResponse.json(order, { status: 200 });
   } catch (error) {
     console.error("Error updating order:", error);
-    return NextResponse.json(
-      { error: "Failed to update order" },
-      { status: 500 }
-    );
+    return NextResponse.json(error, { status: 500 });
   }
 }

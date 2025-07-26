@@ -51,7 +51,10 @@ export default function AdminSalesChart({ orders = [] }: AdminSalesChartProps) {
 
       const dayOrders = orders.filter((order) => {
         const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
-        return orderDate === dateStr && order.status === "delivered";
+        return (
+          orderDate === dateStr &&
+          (order.status === "delivered" || order.status === "collected")
+        );
       });
 
       const totalSales = dayOrders.reduce((sum, order) => {

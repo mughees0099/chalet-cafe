@@ -20,6 +20,7 @@ import {
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
+import { toast } from "react-toastify";
 
 type Order = {
   _id: string;
@@ -49,7 +50,9 @@ type Order = {
     | "ready"
     | "delivered"
     | "cancelled"
-    | "Out for Delivery";
+    | "Out for Delivery"
+    | "collected";
+
   createdAt: string;
   updatedAt: string;
 };
@@ -87,7 +90,9 @@ export default function AdminOrdersFilter({
   };
 
   const generatePDF = () => {
-    let filteredOrders = orders.filter((order) => order.status === "delivered");
+    let filteredOrders = orders.filter(
+      (order) => order.status === "delivered" || order.status === "collected"
+    );
 
     if (dateRange?.from && dateRange?.to) {
       filteredOrders = filteredOrders.filter((order) => {
@@ -98,14 +103,6 @@ export default function AdminOrdersFilter({
 
         const endDate = new Date(dateRange.to!);
         endDate.setHours(23, 59, 59, 999);
-
-        console.log("Order date:", orderDate);
-        console.log("Start date:", startDate);
-        console.log("End date:", endDate);
-        console.log(
-          "Is in range:",
-          orderDate >= startDate && orderDate <= endDate
-        );
 
         return orderDate >= startDate && orderDate <= endDate;
       });
@@ -119,16 +116,9 @@ export default function AdminOrdersFilter({
       );
     }
 
-    console.log("Total orders:", orders.length);
-    console.log(
-      "Delivered orders:",
-      orders.filter((o) => o.status === "delivered").length
-    );
-    console.log("Filtered orders for PDF:", filteredOrders.length);
-
     if (filteredOrders.length === 0) {
-      alert(
-        "No delivered orders found for the selected criteria. Please check your filters."
+      toast.info(
+        "No delivered or collected orders found for the selected criteria. Please check your filters."
       );
       return;
     }
@@ -324,9 +314,12 @@ export default function AdminOrdersFilter({
                 }).format(new Date(order.createdAt))}</td>
                 <td>${order.orderId}</td>
                 <td>${order.user.name}</td>
-                <td>${order.paymentMethod.toUpperCase()}</td>
+                <td>${
+                  order.orderType ? "COP" : order.paymentMethod.toUpperCase()
+                }</td>
                 <td>Rs. ${order.totalAmount.toLocaleString()}</td>
               </tr>
+              ${console.log(order)}
             `
               )
               .join("")}

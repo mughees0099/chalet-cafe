@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,12 +15,32 @@ import { useCart } from "@/components/cart/cart-provider";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-export default function CheckoutForm({ user }: any) {
+interface Branch {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+}
+
+interface CheckoutFormProps {
+  user: any;
+  orderType: "delivery" | "pickup";
+  selectedBranch: string;
+  branches: Branch[];
+}
+
+export default function CheckoutForm({
+  user,
+  orderType,
+  selectedBranch,
+  branches,
+}: CheckoutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const router = useRouter();
   const { clearCart } = useCart();
   const { cartItems, totalPrice } = useCart();
+
   const [formData, setFormData] = useState({
     name: user.name || "",
     email: user.email || "",
@@ -41,6 +60,14 @@ export default function CheckoutForm({ user }: any) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Validation for pickup orders
+    if (orderType === "pickup" && !selectedBranch) {
+      toast.error("Please select a branch for pickup");
+      setIsSubmitting(false);
+      return;
+    }
+
     if (paymentMethod === "online") {
       toast.warn("Currently online payment is not available.");
       setIsSubmitting(false);
@@ -48,6 +75,9 @@ export default function CheckoutForm({ user }: any) {
     }
 
     try {
+      const deliveryFee = orderType === "delivery" ? 150 : 0;
+      const selectedBranchData = branches.find((b) => b.id === selectedBranch);
+
       const response = await axios.post("/api/orders", {
         user: user._id,
         products: cartItems.map((item) => ({
@@ -55,9 +85,19 @@ export default function CheckoutForm({ user }: any) {
           quantity: item.quantity,
         })),
         paymentMethod,
-        totalAmount: totalPrice + 150,
+        totalAmount: totalPrice + deliveryFee,
         notes: formData.notes,
-        deliveryAddress: formData.address,
+        orderType,
+        deliveryAddress: orderType === "delivery" ? formData.address : null,
+        pickupBranch:
+          orderType === "pickup"
+            ? {
+                branchId: selectedBranch,
+                branchName: selectedBranchData?.name,
+                branchAddress: selectedBranchData?.address,
+                branchPhone: selectedBranchData?.phone,
+              }
+            : null,
       });
 
       if (response.status === 201) {
@@ -80,7 +120,11 @@ export default function CheckoutForm({ user }: any) {
       <div className="space-y-8">
         <Card>
           <CardHeader>
-            <CardTitle>Delivery Information</CardTitle>
+            <CardTitle>
+              {orderType === "delivery"
+                ? "Delivery Information"
+                : "Contact Information"}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -91,7 +135,6 @@ export default function CheckoutForm({ user }: any) {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  // placeholder="John Doe"
                   required
                 />
               </div>
@@ -108,7 +151,6 @@ export default function CheckoutForm({ user }: any) {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
@@ -121,31 +163,35 @@ export default function CheckoutForm({ user }: any) {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  name="city"
-                  value={formData.city}
-                  placeholder="Islamabad"
-                  required
-                  readOnly
-                  className="bg-gray-100 cursor-not-allowed"
-                />
-              </div>
+              {orderType === "delivery" && (
+                <div className="space-y-2">
+                  <Label htmlFor="city">City</Label>
+                  <Input
+                    id="city"
+                    name="city"
+                    value={formData.city}
+                    placeholder="Islamabad"
+                    required
+                    readOnly
+                    className="bg-gray-100 cursor-not-allowed"
+                  />
+                </div>
+              )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="address">Delivery Address</Label>
-              <Textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                placeholder="House #123, Street #45, Sector F-7, Islamabad"
-                required
-              />
-            </div>
+            {orderType === "delivery" && (
+              <div className="space-y-2">
+                <Label htmlFor="address">Delivery Address</Label>
+                <Textarea
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="House #123, Street #45, Sector F-7, Islamabad"
+                  required
+                />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="notes">Order Notes (Optional)</Label>
@@ -154,7 +200,11 @@ export default function CheckoutForm({ user }: any) {
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
-                placeholder="Special instructions for delivery or food preparation"
+                placeholder={
+                  orderType === "pickup"
+                    ? "Special instructions for food preparation or pickup time preferences"
+                    : "Special instructions for delivery or food preparation"
+                }
               />
             </div>
           </CardContent>
@@ -167,22 +217,30 @@ export default function CheckoutForm({ user }: any) {
           <CardContent>
             <Tabs defaultValue="cod" onValueChange={setPaymentMethod}>
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="cod">Cash on Delivery</TabsTrigger>
+                <TabsTrigger value="cod">
+                  {orderType === "delivery"
+                    ? "Cash on Delivery"
+                    : "Cash on Pickup"}
+                </TabsTrigger>
                 <TabsTrigger value="online">Online Payment</TabsTrigger>
               </TabsList>
-
               <TabsContent value="cod" className="pt-4">
                 <div className="flex items-center space-x-2 p-4 bg-secondary rounded-md">
                   <Banknote className="h-5 w-5 text-primary" />
                   <div>
-                    <p className="font-medium">Cash on Delivery</p>
+                    <p className="font-medium">
+                      {orderType === "delivery"
+                        ? "Cash on Delivery"
+                        : "Cash on Pickup"}
+                    </p>
                     <p className="text-sm text-gray-500">
-                      Pay with cash when your order is delivered
+                      {orderType === "delivery"
+                        ? "Pay with cash when your order is delivered"
+                        : "Pay with cash when you pick up your order"}
                     </p>
                   </div>
                 </div>
               </TabsContent>
-
               <TabsContent value="online" className="pt-4">
                 <div className="space-y-4">
                   <RadioGroup defaultValue="easypaisa">
@@ -190,26 +248,24 @@ export default function CheckoutForm({ user }: any) {
                       <RadioGroupItem value="easypaisa" id="easypaisa" />
                       <Label htmlFor="easypaisa" className="flex items-center">
                         <img
-                          src="/easypaisa-logo.png?height=30&width=80"
+                          src="/placeholder.svg?height=30&width=80&text=Easypaisa"
                           alt="Easypaisa"
                           className="h-4 w-8 mr-2"
                         />
                         Easypaisa
                       </Label>
                     </div>
-
                     <div className="flex items-center space-x-2 border p-4 rounded-md">
                       <RadioGroupItem value="jazzcash" id="jazzcash" />
                       <Label htmlFor="jazzcash" className="flex items-center">
                         <img
-                          src="/jazzcash-logo.png?height=30&width=80"
+                          src="/placeholder.svg?height=30&width=80&text=JazzCash"
                           alt="JazzCash"
                           className="h-4 w-8 mr-2"
                         />
                         JazzCash
                       </Label>
                     </div>
-
                     <div className="flex items-center space-x-2 border p-4 rounded-md">
                       <RadioGroupItem value="card" id="card" />
                       <Label htmlFor="card" className="flex items-center">
@@ -218,8 +274,6 @@ export default function CheckoutForm({ user }: any) {
                       </Label>
                     </div>
                   </RadioGroup>
-
-                  {/* Payment details would be shown based on selected method */}
                 </div>
               </TabsContent>
             </Tabs>
@@ -229,7 +283,7 @@ export default function CheckoutForm({ user }: any) {
         <Button
           type="submit"
           className="w-full bg-primary hover:bg-primary/90 text-lg py-6"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (orderType === "pickup" && !selectedBranch)}
         >
           {isSubmitting ? (
             <>
@@ -238,7 +292,11 @@ export default function CheckoutForm({ user }: any) {
             </>
           ) : (
             `Place Order ${
-              paymentMethod === "cod" ? "(Cash on Delivery)" : "(Pay Online)"
+              paymentMethod === "cod"
+                ? orderType === "delivery"
+                  ? "(Cash on Delivery)"
+                  : "(Cash on Pickup)"
+                : "(Pay Online)"
             }`
           )}
         </Button>

@@ -57,7 +57,6 @@ export default function AdminDashboardPage() {
       </div>
     );
   }
-  console.log("data of", JSON.stringify(data));
 
   return (
     <div className="space-y-8 p-4 md:p-6 lg:p-8">

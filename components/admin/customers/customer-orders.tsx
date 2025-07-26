@@ -1,177 +1,3 @@
-// "use client";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { Badge } from "@/components/ui/badge";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Eye } from "lucide-react";
-
-// interface CustomerOrdersProps {
-//   customerId: number;
-// }
-
-// export default function CustomerOrders({ customerId }: CustomerOrdersProps) {
-//   const orders = [
-//     {
-//       id: "ORD-2023-1001",
-//       date: "2023-05-10T18:30:00",
-//       status: "delivered",
-//       items: 4,
-//       total: 2200,
-//       paymentMethod: "Cash on Delivery",
-//     },
-//     {
-//       id: "ORD-2023-0892",
-//       date: "2023-04-25T20:15:00",
-//       status: "delivered",
-//       items: 3,
-//       total: 1850,
-//       paymentMethod: "Easypaisa",
-//     },
-//     {
-//       id: "ORD-2023-0764",
-//       date: "2023-04-12T19:45:00",
-//       status: "delivered",
-//       items: 5,
-//       total: 3100,
-//       paymentMethod: "JazzCash",
-//     },
-//     {
-//       id: "ORD-2023-0621",
-//       date: "2023-03-28T13:20:00",
-//       status: "delivered",
-//       items: 2,
-//       total: 1200,
-//       paymentMethod: "Cash on Delivery",
-//     },
-//     {
-//       id: "ORD-2023-0495",
-//       date: "2023-03-15T21:10:00",
-//       status: "cancelled",
-//       items: 3,
-//       total: 1950,
-//       paymentMethod: "Easypaisa",
-//     },
-//   ];
-
-//   const formatDate = (dateString: string) => {
-//     const date = new Date(dateString);
-//     return new Intl.DateTimeFormat("en-PK", {
-//       year: "numeric",
-//       month: "short",
-//       day: "numeric",
-//       hour: "numeric",
-//       minute: "numeric",
-//     }).format(date);
-//   };
-
-//   const getStatusBadge = (status: string) => {
-//     switch (status) {
-//       case "pending":
-//         return (
-//           <Badge
-//             variant="outline"
-//             className="text-orange-600 border-orange-200 bg-orange-50"
-//           >
-//             Pending
-//           </Badge>
-//         );
-//       case "processing":
-//         return (
-//           <Badge
-//             variant="outline"
-//             className="text-blue-600 border-blue-200 bg-blue-50"
-//           >
-//             Processing
-//           </Badge>
-//         );
-//       case "delivered":
-//         return (
-//           <Badge
-//             variant="outline"
-//             className="text-green-600 border-green-200 bg-green-50"
-//           >
-//             Delivered
-//           </Badge>
-//         );
-//       case "cancelled":
-//         return (
-//           <Badge
-//             variant="outline"
-//             className="text-red-600 border-red-200 bg-red-50"
-//           >
-//             Cancelled
-//           </Badge>
-//         );
-//       default:
-//         return <Badge variant="outline">{status}</Badge>;
-//     }
-//   };
-
-//   return (
-//     <Card className="border-0 shadow-lg">
-//       <CardContent className="p-0">
-//         <div className="overflow-x-auto">
-//           <Table>
-//             <TableHeader>
-//               <TableRow className="bg-gray-50">
-//                 <TableHead className="font-semibold">Order ID</TableHead>
-//                 <TableHead className="font-semibold">Date</TableHead>
-//                 <TableHead className="font-semibold">Status</TableHead>
-//                 <TableHead className="font-semibold">Items</TableHead>
-//                 <TableHead className="font-semibold">Total</TableHead>
-//                 <TableHead className="font-semibold">Payment</TableHead>
-//                 <TableHead className="text-right font-semibold">
-//                   Actions
-//                 </TableHead>
-//               </TableRow>
-//             </TableHeader>
-//             <TableBody>
-//               {orders.map((order) => (
-//                 <TableRow key={order.id} className="hover:bg-gray-50">
-//                   <TableCell className="font-medium">{order.id}</TableCell>
-//                   <TableCell>{formatDate(order.date)}</TableCell>
-//                   <TableCell>{getStatusBadge(order.status)}</TableCell>
-//                   <TableCell>{order.items}</TableCell>
-//                   <TableCell className="font-semibold">
-//                     Rs. {order.total.toLocaleString()}
-//                   </TableCell>
-//                   <TableCell>{order.paymentMethod}</TableCell>
-//                   <TableCell className="text-right">
-//                     <Button
-//                       variant="ghost"
-//                       size="icon"
-//                       className="hover:bg-blue-50"
-//                     >
-//                       <Eye className="h-4 w-4" />
-//                     </Button>
-//                   </TableCell>
-//                 </TableRow>
-//               ))}
-//               {orders.length === 0 && (
-//                 <TableRow>
-//                   <TableCell
-//                     colSpan={7}
-//                     className="text-center py-8 text-muted-foreground"
-//                   >
-//                     No orders found for this customer
-//                   </TableCell>
-//                 </TableRow>
-//               )}
-//             </TableBody>
-//           </Table>
-//         </div>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
 "use client";
 
 import {
@@ -482,8 +308,14 @@ body {
 </div>
 
 <div class="address-section">
-  <h3>📍 Delivery Address</h3>
-  <div class="address-value">${order.deliveryAddress}</div>
+  <h3>📍 ${
+    order.orderType === "pickup" ? "Pickup Location" : "Delivery Address"
+  }</h3>
+  <div class="address-value">${
+    order.orderType === "pickup"
+      ? "Main Nazim-ud-din Road F-7/1, Opposite Islamabad Stock Exchange Tower, Islamabad, Pakistan 44000."
+      : order.deliveryAddress
+  }</div>
 </div>
         
         <table class="items-table">
@@ -516,7 +348,11 @@ body {
         <div class="total-section">
           <div class="total-row">
             <span>Subtotal:</span>
-            <span>RS. ${(order.totalAmount - 150).toFixed(2)}</span>
+            <span>RS. ${
+              order.orderType
+                ? order.totalAmount
+                : (order.totalAmount - 150).toFixed(2)
+            }</span>
           </div>
           <div class="total-row">
             <span>Tax (0%):</span>
@@ -524,7 +360,7 @@ body {
           </div>
           <div class="total-row">
             <span>Delivery Fee:</span>
-            <span>RS. 150.00</span>
+            <span>RS. ${order.orderType ? "0.00" : "150"}</span>
           </div>
           <div class="total-row total-final">
             <span>Total Amount:</span>
@@ -534,7 +370,7 @@ body {
         
         <div class="footer">
           <p><strong>Thank you for choosing Chalet Cafe! ☕</strong></p>
-          <p>For any queries, contact us at <strong>info@chaletcafe.com</strong> | <strong>+92-XXX-XXXXXXX</strong></p>
+          <p>For any queries, contact us at <strong>info@chaletcafe.com</strong> | <strong>+92-07817 617782</strong></p>
           <p>Generated on ${new Date().toLocaleString()}</p>
         </div>
       </div>
@@ -632,6 +468,8 @@ export default function CustomerOrders({
                               ? "text-red-600 bg-red-100 "
                               : selectedOrder.status === "Out for Delivery"
                               ? "text-purple-600 bg-purple-100"
+                              : selectedOrder.status === "collected"
+                              ? "text-green-600 bg-green-100 "
                               : "text-gray-600 bg-gray-100"
                           } font-medium`}
                         >
@@ -653,7 +491,8 @@ export default function CustomerOrders({
                               ? 80
                               : selectedOrder.status === "Out for Delivery"
                               ? 90
-                              : selectedOrder.status === "delivered"
+                              : selectedOrder.status === "delivered" ||
+                                selectedOrder.status === "collected"
                               ? 100
                               : 0}
                             %
@@ -672,7 +511,8 @@ export default function CustomerOrders({
                                   ? "80%"
                                   : selectedOrder.status === "Out for Delivery"
                                   ? "90%"
-                                  : selectedOrder.status === "delivered"
+                                  : selectedOrder.status === "delivered" ||
+                                    selectedOrder.status === "collected"
                                   ? "100%"
                                   : "0%",
                             }}
@@ -740,6 +580,8 @@ export default function CustomerOrders({
                             ? "10 - 15 mins (on the way)"
                             : selectedOrder.status === "delivered"
                             ? "Delivered"
+                            : selectedOrder.status === "collected"
+                            ? "Collected"
                             : "Unknown"}
                         </span>
                       </div>
@@ -830,15 +672,16 @@ export default function CustomerOrders({
           <Button variant="outline" onClick={() => setOrderDetailDialog(false)}>
             Close
           </Button>
-          {selectedOrder && selectedOrder.status === "delivered" && (
-            <Button
-              onClick={() => handleDownloadReceipt(selectedOrder)}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Download Receipt
-            </Button>
-          )}
+          {(selectedOrder && selectedOrder.status === "delivered") ||
+            (selectedOrder.status === "collected" && (
+              <Button
+                onClick={() => handleDownloadReceipt(selectedOrder)}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Download Receipt
+              </Button>
+            ))}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -885,6 +728,15 @@ export default function CustomerOrders({
             className="text-green-600 border-green-200 bg-green-50"
           >
             Delivered
+          </Badge>
+        );
+      case "collected":
+        return (
+          <Badge
+            variant="outline"
+            className="text-green-600 border-green-200 bg-green-50"
+          >
+            Collected
           </Badge>
         );
       case "cancelled":
