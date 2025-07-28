@@ -98,14 +98,13 @@ export default function Footer() {
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
                 <span className="text-primary-foreground/80">
-                  123 Cafe Street, F-7, Islamabad, Pakistan
+                  Main Nazim-ud-din Road F-7/1, Opposite Islamabad Stock
+                  Exchange Tower. Islamabad, Pakistan 44000
                 </span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 mr-2 flex-shrink-0" />
-                <span className="text-primary-foreground/80">
-                  +92 51 1234567
-                </span>
+                <span className="text-primary-foreground/80">0332-5022964</span>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 mr-2 flex-shrink-0" />
@@ -114,24 +113,6 @@ export default function Footer() {
                 </span>
               </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-            <p className="text-primary-foreground/80 mb-4">
-              Subscribe to our newsletter for updates, promotions, and special
-              offers.
-            </p>
-            <div className="flex flex-col space-y-2">
-              <Input
-                type="email"
-                placeholder="Your email address"
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
-              />
-              <Button className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                Subscribe
-              </Button>
-            </div>
           </div>
         </div>
 

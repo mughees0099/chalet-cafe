@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -44,18 +45,29 @@ export default function ContactForm() {
       if (!/\S+@\S+\.\S+/.test(formData.email)) {
         throw new Error("Invalid email address");
       }
-      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      toast.success("Message sent successfully!");
+      const response = await axios.post(
+        process.env.NEXT_PUBLIC_FORM_SPREE_URL || "",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Message sent successfully!");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          subject: "",
+          message: "",
+        });
+      }
 
       // Reset form
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        subject: "",
-        message: "",
-      });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

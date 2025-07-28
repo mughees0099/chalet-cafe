@@ -83,6 +83,32 @@ const galleryItems = {
       caption: "Lotus Vanilla Cream Dessert",
     },
   ],
+  events: [
+    {
+      id: "gradutaion",
+      src: "/event1.jpg?height=400&width=600",
+      alt: "Graduation Ceremony",
+      caption: "Graduation Ceremony at Chalet Cafe",
+    },
+    {
+      id: "graduation2",
+      src: "/event2.jpg?height=400&width=600",
+      alt: "Graduation Ceremony",
+      caption: "Graduation Ceremony at Chalet Cafe",
+    },
+    {
+      id: "birthday",
+      src: "/event3.jpg?height=400&width=600",
+      alt: "Birthday Party",
+      caption: "Birthday Party at Chalet Cafe",
+    },
+    {
+      id: "birthday2",
+      src: "/event4.jpg?height=400&width=600",
+      alt: "Birthday Party",
+      caption: "Birthday Party at Chalet Cafe",
+    },
+  ],
 };
 
 export default function GalleryGrid() {
@@ -121,6 +147,7 @@ export default function GalleryGrid() {
           <TabsList>
             <TabsTrigger value="cafe">Cafe</TabsTrigger>
             <TabsTrigger value="food">Food & Drinks</TabsTrigger>
+            <TabsTrigger value="events">Events</TabsTrigger>
           </TabsList>
         </div>
 
@@ -145,7 +172,7 @@ export default function GalleryGrid() {
                     className="w-full h-full object-fill transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <p className="text-white p-4">{item.caption}</p>
+                    <p className="text-white p-4">{item.alt}</p>
                   </div>
                 </div>
               </motion.div>
@@ -174,7 +201,35 @@ export default function GalleryGrid() {
                     className="w-full h-full  object-fill transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                    <p className="text-white p-4">{item.caption}</p>
+                    <p className="text-white p-4">{item.alt}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </TabsContent>
+        <TabsContent value="events">
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={containerVariants}
+            initial="hidden"
+            animate={inView ? "visible" : "hidden"}
+          >
+            {galleryItems.events.map((item) => (
+              <motion.div
+                key={item.id}
+                variants={itemVariants}
+                className="overflow-hidden rounded-lg shadow-md cursor-pointer"
+                onClick={() => setSelectedImage(item)}
+              >
+                <div className="relative group h-64">
+                  <img
+                    src={item.src || "/placeholder.svg"}
+                    alt={item.alt}
+                    className="w-full h-full object-fill transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                    <p className="text-white p-4">{item.alt}</p>
                   </div>
                 </div>
               </motion.div>

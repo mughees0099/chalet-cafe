@@ -131,7 +131,7 @@ export default function AboutPage() {
               <div className="text-center">
                 <div className="rounded-full overflow-hidden w-48 h-48 mx-auto mb-4">
                   <img
-                    src="/placeholder.svg?height=200&width=200"
+                    src="/about-boy1.jpg?height=200&width=200"
                     alt="Ahmed Khan - Founder & CEO"
                     className="w-full h-full object-cover"
                   />
@@ -146,7 +146,7 @@ export default function AboutPage() {
               <div className="text-center">
                 <div className="rounded-full overflow-hidden w-48 h-48 mx-auto mb-4">
                   <img
-                    src="/placeholder.svg?height=200&width=200"
+                    src="/about-girl1.jpg?height=200&width=200"
                     alt="Fatima Ali - Head Chef"
                     className="w-full h-full object-cover"
                   />
@@ -161,7 +161,7 @@ export default function AboutPage() {
               <div className="text-center">
                 <div className="rounded-full overflow-hidden w-48 h-48 mx-auto mb-4">
                   <img
-                    src="/placeholder.svg?height=200&width=200"
+                    src="/about-boy2.jpg?height=200&width=200"
                     alt="Omar Malik - Master Barista"
                     className="w-full h-full object-cover"
                   />
