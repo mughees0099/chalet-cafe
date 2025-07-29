@@ -76,6 +76,15 @@ export default function AdminOrdersTable({ data }: any) {
             Delivered
           </Badge>
         );
+      case "collected":
+        return (
+          <Badge
+            className="bg-green-50 text-green-700 border-green-200"
+            variant="outline"
+          >
+            Collected
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -115,7 +124,7 @@ export default function AdminOrdersTable({ data }: any) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order: any) => (
+              {filteredOrders.slice(0, 5).map((order: any) => (
                 <TableRow
                   key={order._id}
                   className="hover:bg-gray-50/50 transition-colors"

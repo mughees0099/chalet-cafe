@@ -408,6 +408,8 @@ export default function CustomerOrders({
         return <Truck className="h-4 w-4" />;
       case "cancelled":
         return <AlertTriangle className="h-4 w-4 text-red-600" />;
+      case "collected":
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
       case "delivered":
         return <CheckCircle className="h-4 w-4 text-green-600" />;
       default:
@@ -672,8 +674,9 @@ export default function CustomerOrders({
           <Button variant="outline" onClick={() => setOrderDetailDialog(false)}>
             Close
           </Button>
-          {(selectedOrder && selectedOrder.status === "delivered") ||
-            (selectedOrder.status === "collected" && (
+          {selectedOrder &&
+            (selectedOrder.status === "delivered" ||
+              selectedOrder.status === "collected") && (
               <Button
                 onClick={() => handleDownloadReceipt(selectedOrder)}
                 className="bg-red-600 hover:bg-red-700"
@@ -681,7 +684,7 @@ export default function CustomerOrders({
                 <Download className="h-4 w-4 mr-2" />
                 Download Receipt
               </Button>
-            ))}
+            )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

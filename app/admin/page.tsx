@@ -168,7 +168,11 @@ export default function AdminDashboardPage() {
                 </CardTitle>
                 <CardDescription className="text-base mt-1">
                   You have{" "}
-                  {data.totalPendingOrders ? data.totalPendingOrders : 0}
+                  {data.totalPendingOrders
+                    ? data.totalPendingOrders >= 5
+                      ? 5
+                      : data.totalPendingOrders
+                    : 0}
                   {data.totalPendingOrders && data.totalPendingOrders > 1
                     ? " orders "
                     : " order "}
